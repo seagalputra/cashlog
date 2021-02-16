@@ -175,4 +175,6 @@ tags
 # Persistent undo
 [._]*.un~
 
+.idea
+
 # End of https://www.toptal.com/developers/gitignore/api/node,vim,macos,react0

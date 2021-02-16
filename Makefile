@@ -5,6 +5,9 @@ TEST_DB_PORT=5432
 DB_USER=postgres
 DB_PASSWORD=
 
+test:
+	go test ./...
+
 db-setup: db-create db-migrate
 
 db-create:
