@@ -5,10 +5,13 @@ type UserAccountService interface {
 	AuthenticateUser(request *AuthenticateUserRequest) AuthenticateUserResponse
 }
 
-func (u *UserAccount) RegisterAccount(request *RegisterAccountRequest) RegisterAccountResponse {
+type UserAccountServiceImpl struct {
+}
+
+func (u *UserAccountServiceImpl) RegisterAccount(request *RegisterAccountRequest) RegisterAccountResponse {
 	panic("implement me!")
 }
 
-func (u *UserAccount) AuthenticateUser(request *AuthenticateUserRequest) AuthenticateUserResponse {
+func (u *UserAccountServiceImpl) AuthenticateUser(request *AuthenticateUserRequest) AuthenticateUserResponse {
 	panic("implement me")
 }

@@ -3,5 +3,5 @@ package main
 import "fmt"
 
 func main() {
-	fmt.Println("This is cashlog application")
+	fmt.Println("Starting cashlog application...")
 }

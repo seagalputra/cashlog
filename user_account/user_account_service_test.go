@@ -1,16 +1,21 @@
 package user_account
 
 import (
+	"github.com/stretchr/testify/mock"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
-func Add(first int, second int) int {
-	return first + second
+type UserAccountRepositoryMock struct {
+	mock.Mock
 }
 
-func TestAddMethod(t *testing.T) {
-	result := Add(100, 200)
-	assert.Equal(t, 300, result, "Should return sum of two number!")
+func (u *UserAccountRepositoryMock) DoSomething(number int) (bool, error) {
+	args := u.Called(number)
+	return args.Bool(0), args.Error(1)
+}
+
+func TestMock(t *testing.T) {
+	testObj := new(UserAccountRepositoryMock)
+
+	testObj.On("DoSomething", 123).Return(true, nil)
 }
