@@ -3,6 +3,7 @@ module github.com/seagalputra/cashlog
 go 1.15
 
 require (
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/satori/go.uuid v1.2.0
 	github.com/stretchr/objx v0.3.0 // indirect
