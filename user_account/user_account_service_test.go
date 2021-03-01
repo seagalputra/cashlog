@@ -1,21 +1,35 @@
 package user_account
 
 import (
-	"github.com/stretchr/testify/mock"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
-type UserAccountRepositoryMock struct {
-	mock.Mock
-}
+func TestUserAccountServiceImpl_RegisterAccount(t *testing.T) {
+	repo := &UserAccountRepositoryMock{}
 
-func (u *UserAccountRepositoryMock) DoSomething(number int) (bool, error) {
-	args := u.Called(number)
-	return args.Bool(0), args.Error(1)
-}
+	userAccountService := &UserAccountServiceImpl{repo}
 
-func TestMock(t *testing.T) {
-	testObj := new(UserAccountRepositoryMock)
+	userRequest := RegisterAccountRequest{
+		FirstName: "Dwiferdio Seagal",
+		LastName:  "Putra",
+		Username:  "test1234",
+		Password:  "12345",
+		Email:     "testing1234@email.com",
+	}
 
-	testObj.On("DoSomething", 123).Return(true, nil)
+	repo.On("Save", mock.MatchedBy(func(req *UserAccount) bool {
+		assert.Equal(t, userRequest.Email, req.Email)
+		assert.Equal(t, userRequest.FirstName, req.FirstName)
+		assert.Equal(t, userRequest.LastName, req.LastName)
+		assert.Equal(t, userRequest.Username, req.Username)
+		assert.Equal(t, userRequest.Password, req.Password)
+		return true
+	})).Return(nil)
+
+	userId, err := userAccountService.RegisterAccount(&userRequest)
+	assert.NoError(t, err)
+	assert.NotNil(t, userId)
 }

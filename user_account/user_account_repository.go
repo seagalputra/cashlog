@@ -1,11 +1,11 @@
 package user_account
 
 type UserAccountRepository interface {
-	InsertUserAccount(account *UserAccount)
+	Save(account *UserAccount) error
 }
 
 type UserAccountRepositoryImpl struct{}
 
-func (r *UserAccountRepositoryImpl) InsertUserAccount(account *UserAccount) {
+func (r *UserAccountRepositoryImpl) Save(account *UserAccount) error {
 	panic("implement me")
 }
