@@ -2,6 +2,7 @@ package user_account
 
 import (
 	"errors"
+	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	uuid "github.com/satori/go.uuid"
 	"time"
@@ -19,16 +20,16 @@ type UserAccountServiceImpl struct {
 func (u *UserAccountServiceImpl) Authenticate(request *AuthenticateUserRequest) (*AuthenticateUserResponse, error) {
 	userAccount, err := u.userAccountRepo.FindByUsername(request.Username)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("User with username %s not found : %v ", request.Username, err)
 	}
 
 	if userAccount.Username != request.Username || userAccount.Password != request.Password {
-		return nil, errors.New("Username or Password is invalid!")
+		return nil, errors.New("Username or Password is invalid! ")
 	}
 
 	token, err := createToken(userAccount.Id)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Failed to create token : %v ", err)
 	}
 
 	response := &AuthenticateUserResponse{Token: token}
@@ -47,7 +48,7 @@ func createToken(userId int64) (string, error) {
 	unsignedToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	token, err := unsignedToken.SignedString([]byte(secret))
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("Failed to sign token : %v ", err)
 	}
 
 	return token, nil
@@ -69,7 +70,7 @@ func (u *UserAccountServiceImpl) RegisterAccount(request *RegisterAccountRequest
 	}
 
 	if err := u.userAccountRepo.Save(account); err != nil {
-		return "", err
+		return "", fmt.Errorf("Failed to registering account : %v ", err)
 	}
 
 	return account.UserId, nil

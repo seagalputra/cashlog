@@ -1,10 +1,9 @@
 package transaction
 
 import (
-	"errors"
+	"fmt"
 	uuid "github.com/satori/go.uuid"
 	. "github.com/seagalputra/cashlog/user_account"
-	"strconv"
 	"time"
 )
 
@@ -20,7 +19,7 @@ type TransactionServiceImpl struct {
 func (t *TransactionServiceImpl) Create(request *CreateTransactionRequest) error {
 	account, err := t.userAccountRepository.FindByID(request.UserId)
 	if err != nil {
-		return errors.New("User with id " + strconv.FormatInt(request.UserId, 10) + " doesn't exist")
+		return fmt.Errorf("User with id %v not found : %v ", request.UserId, err)
 	}
 
 	transactionId := uuid.NewV4().String()
@@ -44,7 +43,7 @@ func (t *TransactionServiceImpl) Create(request *CreateTransactionRequest) error
 
 	err = t.transactionRepository.Save(transaction)
 	if err != nil {
-		return err
+		return fmt.Errorf("Failed to save transaction %v ", err)
 	}
 
 	return nil
