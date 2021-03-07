@@ -26,7 +26,7 @@ func (u *UserAccountServiceImpl) Authenticate(request *AuthenticateUserRequest) 
 		return nil, errors.New("Username or Password is invalid!")
 	}
 
-	token, err := createToken(userAccount.UserId)
+	token, err := createToken(userAccount.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -36,7 +36,7 @@ func (u *UserAccountServiceImpl) Authenticate(request *AuthenticateUserRequest) 
 	return response, nil
 }
 
-func createToken(userId string) (string, error) {
+func createToken(userId int64) (string, error) {
 	// TODO: Change this secret key with key from environment variable
 	secret := "asdfghjkl"
 	claims := jwt.MapClaims{}

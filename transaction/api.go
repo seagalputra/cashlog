@@ -1,10 +1,14 @@
 package transaction
 
+import "math/big"
+
 type (
 	CreateTransactionRequest struct {
-		Title           string `json:"title"`
-		Amount          int64  `json:"amount"`
-		TransactionDate string `json:"transactionDate"`
-		Description     string `json:"description"`
+		UserId            int64
+		Title             string
+		Amount            big.Float
+		TransactionDate   string
+		Description       string
+		TransactionStatus string
 	}
 )

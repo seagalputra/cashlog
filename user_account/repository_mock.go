@@ -11,8 +11,8 @@ func (u *UserAccountRepositoryMock) FindByUsername(username string) (*UserAccoun
 	return args.Get(0).(*UserAccount), args.Error(1)
 }
 
-func (u *UserAccountRepositoryMock) FindByID(userId string) (*UserAccount, error) {
-	args := u.Called(userId)
+func (u *UserAccountRepositoryMock) FindByID(id int64) (*UserAccount, error) {
+	args := u.Called(id)
 	return args.Get(0).(*UserAccount), args.Error(1)
 }
 

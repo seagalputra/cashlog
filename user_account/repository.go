@@ -2,7 +2,7 @@ package user_account
 
 type UserAccountRepository interface {
 	Save(account *UserAccount) error
-	FindByID(userId string) (*UserAccount, error)
+	FindByID(id int64) (*UserAccount, error)
 	FindByUsername(username string) (*UserAccount, error)
 }
 
@@ -12,7 +12,7 @@ func (r *UserAccountRepositoryImpl) FindByUsername(username string) (*UserAccoun
 	panic("implement me")
 }
 
-func (r *UserAccountRepositoryImpl) FindByID(userId string) (*UserAccount, error) {
+func (r *UserAccountRepositoryImpl) FindByID(id int64) (*UserAccount, error) {
 	panic("implement me")
 }
 
