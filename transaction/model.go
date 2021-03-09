@@ -20,7 +20,9 @@ type (
 	TransactionDetail struct {
 		Id                  int64
 		TransactionDetailId string
-		Amount              big.Float
+		Needs               big.Float
+		Wants               big.Float
+		Invest              big.Float
 		Description         string
 		Status              string
 	}
