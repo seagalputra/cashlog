@@ -1,4 +1,4 @@
-package user_account
+package user
 
 import (
 	"testing"
@@ -7,12 +7,12 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func TestUserAccountServiceImpl_RegisterAccount(t *testing.T) {
-	repo := &UserAccountRepositoryMock{}
+func TestUserServiceImpl_RegisterAccount(t *testing.T) {
+	repo := &RepositoryMock{}
 
-	userAccountService := &UserAccountServiceImpl{repo}
+	userAccountService := &ServiceImpl{repo}
 
-	userRequest := RegisterAccountRequest{
+	userRequest := RegisterRequest{
 		FirstName: "Dwiferdio Seagal",
 		LastName:  "Putra",
 		Username:  "test1234",
@@ -20,12 +20,11 @@ func TestUserAccountServiceImpl_RegisterAccount(t *testing.T) {
 		Email:     "testing1234@email.com",
 	}
 
-	repo.On("Save", mock.MatchedBy(func(req *UserAccount) bool {
+	repo.On("Save", mock.MatchedBy(func(req *User) bool {
 		assert.Equal(t, userRequest.Email, req.Email)
 		assert.Equal(t, userRequest.FirstName, req.FirstName)
 		assert.Equal(t, userRequest.LastName, req.LastName)
 		assert.Equal(t, userRequest.Username, req.Username)
-		assert.Equal(t, userRequest.Password, req.Password)
 		return true
 	})).Return(nil)
 
@@ -34,17 +33,17 @@ func TestUserAccountServiceImpl_RegisterAccount(t *testing.T) {
 	assert.NotNil(t, userID)
 }
 
-func TestUserAccountServiceImpl_AuthenticateUser(t *testing.T) {
-	repo := &UserAccountRepositoryMock{}
+func TestUserServiceImpl_AuthenticateUser(t *testing.T) {
+	repo := &RepositoryMock{}
 
-	userAccountService := &UserAccountServiceImpl{repo}
+	userAccountService := &ServiceImpl{repo}
 
-	authenticeRequest := &AuthenticateUserRequest{
+	authenticeRequest := &AuthenticateRequest{
 		Username: "test1234",
 		Password: "12345",
 	}
 
-	savedAccount := &UserAccount{
+	savedAccount := &User{
 		ID:         1,
 		UserID:     "some user id",
 		FirstName:  "Dwiferdio Seagal",

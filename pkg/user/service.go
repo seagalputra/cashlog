@@ -1,4 +1,4 @@
-package user_account
+package user
 
 import (
 	"errors"
@@ -7,19 +7,23 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	uuid "github.com/satori/go.uuid"
+	"golang.org/x/crypto/bcrypt"
 )
 
-type UserAccountService interface {
-	RegisterAccount(request *RegisterAccountRequest) (string, error)
-	Authenticate(request *AuthenticateUserRequest) (*AuthenticateUserResponse, error)
+// Service interface definition for dealing with business logic related with user.
+type Service interface {
+	RegisterAccount(request *RegisterRequest) (string, error)
+	Authenticate(request *AuthenticateRequest) (*AuthenticateResponse, error)
 }
 
-type UserAccountServiceImpl struct {
-	userAccountRepo UserAccountRepository
+// ServiceImpl is implementation details for dealing with business logic related with user.
+type ServiceImpl struct {
+	UserAccountRepo Repository
 }
 
-func (u *UserAccountServiceImpl) Authenticate(request *AuthenticateUserRequest) (*AuthenticateUserResponse, error) {
-	userAccount, err := u.userAccountRepo.FindByUsername(request.Username)
+// Authenticate is function for authentice user account.
+func (u *ServiceImpl) Authenticate(request *AuthenticateRequest) (*AuthenticateResponse, error) {
+	userAccount, err := u.UserAccountRepo.FindByUsername(request.Username)
 	if err != nil {
 		return nil, fmt.Errorf("User with username %s not found : %v ", request.Username, err)
 	}
@@ -28,17 +32,17 @@ func (u *UserAccountServiceImpl) Authenticate(request *AuthenticateUserRequest) 
 		return nil, errors.New("Username or Password is invalid! ")
 	}
 
-	token, err := createToken(userAccount.ID)
+	token, err := u.createToken(userAccount.ID)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to create token : %v ", err)
 	}
 
-	response := &AuthenticateUserResponse{Token: token}
+	response := &AuthenticateResponse{Token: token}
 
 	return response, nil
 }
 
-func createToken(userID int64) (string, error) {
+func (u *ServiceImpl) createToken(userID int64) (string, error) {
 	// TODO: Change this secret key with key from environment variable
 	secret := "asdfghjkl"
 	claims := jwt.MapClaims{}
@@ -55,22 +59,27 @@ func createToken(userID int64) (string, error) {
 	return token, nil
 }
 
-func (u *UserAccountServiceImpl) RegisterAccount(request *RegisterAccountRequest) (string, error) {
+// RegisterAccount is function for registering given account
+func (u *ServiceImpl) RegisterAccount(request *RegisterRequest) (string, error) {
 	userID := uuid.NewV4().String()
 
-	// TODO: encrypt and salt user password
-	account := &UserAccount{
+	encrypted, err := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return "", errors.New(err.Error())
+	}
+
+	account := &User{
 		UserID:     userID,
 		FirstName:  request.FirstName,
 		LastName:   request.LastName,
 		Username:   request.Username,
-		Password:   request.Password,
+		Password:   string(encrypted),
 		Email:      request.Email,
 		IsDisabled: false,
 		IsVerified: false,
 	}
 
-	if err := u.userAccountRepo.Save(account); err != nil {
+	if err := u.UserAccountRepo.Save(account); err != nil {
 		return "", fmt.Errorf("Failed to registering account : %v ", err)
 	}
 

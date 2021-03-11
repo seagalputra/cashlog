@@ -5,18 +5,18 @@ import (
 	"time"
 
 	uuid "github.com/satori/go.uuid"
-	. "github.com/seagalputra/cashlog/user_account"
+	"github.com/seagalputra/cashlog/pkg/user"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
 
-func TestTransactionServiceImpl_CreateOutcomeTransactionNeeds(t *testing.T) {
-	transactionRepository := &TransactionRepositoryMock{}
-	userAccountRepository := &UserAccountRepositoryMock{}
+func TestTransactionServiceImpl_CreateOutcomeNeeds(t *testing.T) {
+	transactionRepository := &RepositoryMock{}
+	userAccountRepository := &user.RepositoryMock{}
 
-	transactionService := &TransactionServiceImpl{transactionRepository, userAccountRepository}
+	transactionService := &ServiceImpl{transactionRepository, userAccountRepository}
 
-	request := CreateOutcomeTransactionRequest{
+	request := CreateOutcomeRequest{
 		UserID:          1,
 		Title:           "Lunch",
 		Amount:          "-15000.00",
@@ -25,7 +25,7 @@ func TestTransactionServiceImpl_CreateOutcomeTransactionNeeds(t *testing.T) {
 		TransactionType: "needs",
 	}
 
-	savedAccount := &UserAccount{
+	savedAccount := &user.User{
 		ID:         1,
 		UserID:     uuid.NewV4().String(),
 		FirstName:  "Dwiferdio Seagal",
@@ -39,7 +39,7 @@ func TestTransactionServiceImpl_CreateOutcomeTransactionNeeds(t *testing.T) {
 
 	userAccountRepository.On("FindByID", mock.Anything).Return(savedAccount, nil)
 	transactionRepository.On("Save", mock.MatchedBy(func(req Transaction) bool {
-		assert.Equal(t, request.UserID, req.UserAccount.ID)
+		assert.Equal(t, request.UserID, req.User.ID)
 		assert.Equal(t, request.Title, req.Title)
 		assert.Equal(t, request.Amount, req.Amount)
 		assert.Equal(t, request.Description, req.Detail.Description)
@@ -53,13 +53,13 @@ func TestTransactionServiceImpl_CreateOutcomeTransactionNeeds(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestTransactionServiceImpl_CreateOutcomeTransactionWants(t *testing.T) {
-	transactionRepository := &TransactionRepositoryMock{}
-	userAccountRepository := &UserAccountRepositoryMock{}
+func TestTransactionServiceImpl_CreateOutcomeWants(t *testing.T) {
+	transactionRepository := &RepositoryMock{}
+	userAccountRepository := &user.RepositoryMock{}
 
-	transactionService := &TransactionServiceImpl{transactionRepository, userAccountRepository}
+	transactionService := &ServiceImpl{transactionRepository, userAccountRepository}
 
-	request := CreateOutcomeTransactionRequest{
+	request := CreateOutcomeRequest{
 		UserID:          1,
 		Title:           "Snack",
 		Amount:          "-25000.00",
@@ -68,7 +68,7 @@ func TestTransactionServiceImpl_CreateOutcomeTransactionWants(t *testing.T) {
 		TransactionType: "wants",
 	}
 
-	savedAccount := &UserAccount{
+	savedAccount := &user.User{
 		ID:         1,
 		UserID:     uuid.NewV4().String(),
 		FirstName:  "Dwiferdio Seagal",
@@ -82,7 +82,7 @@ func TestTransactionServiceImpl_CreateOutcomeTransactionWants(t *testing.T) {
 
 	userAccountRepository.On("FindByID", mock.Anything).Return(savedAccount, nil)
 	transactionRepository.On("Save", mock.MatchedBy(func(req Transaction) bool {
-		assert.Equal(t, request.UserID, req.UserAccount.ID)
+		assert.Equal(t, request.UserID, req.User.ID)
 		assert.Equal(t, request.Title, req.Title)
 		assert.Equal(t, request.Amount, req.Amount)
 		assert.Equal(t, request.Description, req.Detail.Description)
@@ -96,20 +96,20 @@ func TestTransactionServiceImpl_CreateOutcomeTransactionWants(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestTransactionServiceImpl_CreateIncomeTransaction(t *testing.T) {
-	transactionRepository := &TransactionRepositoryMock{}
-	userAccountRepository := &UserAccountRepositoryMock{}
+func TestTransactionServiceImpl_CreateIncome(t *testing.T) {
+	transactionRepository := &RepositoryMock{}
+	userAccountRepository := &user.RepositoryMock{}
 
-	transactionService := &TransactionServiceImpl{transactionRepository, userAccountRepository}
+	transactionService := &ServiceImpl{transactionRepository, userAccountRepository}
 
-	request := &CreateIncomeTransactionRequest{
+	request := &CreateIncomeRequest{
 		Title:           "Salary",
 		Amount:          "3000000.00",
 		TransactionDate: time.Now(),
 		Description:     "Monthly salary income",
 	}
 
-	savedAccount := &UserAccount{
+	savedAccount := &user.User{
 		ID:         1,
 		UserID:     uuid.NewV4().String(),
 		FirstName:  "Dwiferdio Seagal",

@@ -1,6 +1,7 @@
-package user_account
+package user
 
-type UserAccount struct {
+// User domain model
+type User struct {
 	ID         int64
 	UserID     string
 	FirstName  string

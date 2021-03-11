@@ -17,10 +17,10 @@ db-drop:
 	dropdb -p ${DB_PORT} --if-exists -Upostgres ${DB_NAME}
 
 db-migrate:
-	migrate -database 'postgres://postgres@localhost:5432/${DB_NAME}?sslmode=disable&search_path=public' -path db/migrations up
+	migrate -database 'postgres://postgres@localhost:5432/${DB_NAME}?sslmode=disable&search_path=public' -path pkg/db/migrations up
 
 db-migrate-down:
-	migrate -database 'postgres://postgres@localhost:5432/${DB_NAME}?sslmode=disable&search_path=public' -path db/migrations down
+	migrate -database 'postgres://postgres@localhost:5432/${DB_NAME}?sslmode=disable&search_path=public' -path pkg/db/migrations down
 
 db-test-setup: db-test-create
 

@@ -176,5 +176,7 @@ tags
 [._]*.un~
 
 .idea
+*.env
+.vscode
 
 # End of https://www.toptal.com/developers/gitignore/api/node,vim,macos,react0

@@ -6,18 +6,20 @@ import (
 	"time"
 
 	uuid "github.com/satori/go.uuid"
-	"github.com/seagalputra/cashlog/user_account"
+	"github.com/seagalputra/cashlog/pkg/user"
 )
 
-type TransactionService interface {
-	CreateOutcome(request CreateOutcomeTransactionRequest) error
-	CreateIncome(request CreateIncomeTransactionRequest) error
+// Service interface for transaction
+type Service interface {
+	CreateOutcome(request CreateOutcomeRequest) error
+	CreateIncome(request CreateIncomeRequest) error
 	Show(from string, to string) ([]Transaction, error)
 }
 
-type TransactionServiceImpl struct {
-	TransactionRepository TransactionRepository
-	UserAccountRepository user_account.UserAccountRepository
+// ServiceImpl implement Service interface
+type ServiceImpl struct {
+	TransactionRepository Repository
+	UserRepository        user.Repository
 }
 
 const (
@@ -26,28 +28,33 @@ const (
 	investRatio = 0.1
 )
 
-func (t *TransactionServiceImpl) Show(from string, to string) ([]Transaction, error) {
+// Show transactions from specific date.
+// Not using pagination because it's too slow when dealing with large data.
+// Instead use filtering and infinite scrolling to handle bunch of data.
+func (t *ServiceImpl) Show(from string, to string) ([]Transaction, error) {
 	panic("implement me")
 }
 
-func (t *TransactionServiceImpl) CreateIncome(request CreateIncomeTransactionRequest) error {
-	account, err := t.UserAccountRepository.FindByID(request.UserID)
+// CreateIncome for creating incoming transaction.
+// It calculate using ratio (needs, wants, and invest) and store them into specific column.
+func (t *ServiceImpl) CreateIncome(request CreateIncomeRequest) error {
+	account, err := t.UserRepository.FindByID(request.UserID)
 	if err != nil {
-		return fmt.Errorf("User with id %v not found : %v ", request.UserID, err)
+		return fmt.Errorf("Transaction.CreateIncome : %v", err)
 	}
 
 	transactionID := uuid.NewV4().String()
 	transactionDetailID := uuid.NewV4().String()
 	amount, err := strconv.ParseFloat(request.Amount, 64)
 	if err != nil {
-		return fmt.Errorf("Failed to save income transaction : %v ", err)
+		return fmt.Errorf("Transaction.CreateIncome : %v", err)
 	}
 
 	needs := strconv.FormatFloat(needsRatio*amount, 'f', 2, 64)
 	wants := strconv.FormatFloat(wantsRatio*amount, 'f', 2, 64)
 	invest := strconv.FormatFloat(investRatio*amount, 'f', 2, 64)
 
-	transactionDetail := &TransactionDetail{
+	transactionDetail := &Detail{
 		TransactionDetailID: transactionDetailID,
 		Needs:               needs,
 		Wants:               wants,
@@ -62,27 +69,29 @@ func (t *TransactionServiceImpl) CreateIncome(request CreateIncomeTransactionReq
 		Amount:          request.Amount,
 		TransactionDate: time.Now(),
 		Detail:          *transactionDetail,
-		UserAccount:     *account,
+		User:            *account,
 	}
 
 	err = t.TransactionRepository.Save(*transaction)
 	if err != nil {
-		return fmt.Errorf("Failed to save income transaction : %v ", err)
+		return fmt.Errorf("Transaction.CreateIncome : %v", err)
 	}
 
 	return nil
 }
 
-func (t *TransactionServiceImpl) CreateOutcome(request CreateOutcomeTransactionRequest) error {
-	account, err := t.UserAccountRepository.FindByID(request.UserID)
+// CreateOutcome for creating outcoming transaction with specific amount.
+// Specify the type of transaction because the amount will be stored in different column based on type.
+func (t *ServiceImpl) CreateOutcome(request CreateOutcomeRequest) error {
+	account, err := t.UserRepository.FindByID(request.UserID)
 	if err != nil {
-		return fmt.Errorf("User with id %v not found : %v ", request.UserID, err)
+		return fmt.Errorf("Transaction.CreateOutcome : %v", err)
 	}
 
 	transactionID := uuid.NewV4().String()
 	transactionDetailID := uuid.NewV4().String()
 
-	transactionDetail := &TransactionDetail{
+	transactionDetail := &Detail{
 		TransactionDetailID: transactionDetailID,
 		Description:         request.Description,
 		Status:              request.TransactionStatus,
@@ -103,12 +112,12 @@ func (t *TransactionServiceImpl) CreateOutcome(request CreateOutcomeTransactionR
 		Amount:          request.Amount,
 		TransactionDate: time.Now(),
 		Detail:          *transactionDetail,
-		UserAccount:     *account,
+		User:            *account,
 	}
 
 	err = t.TransactionRepository.Save(*transaction)
 	if err != nil {
-		return fmt.Errorf("Failed to save outcome transaction : %v ", err)
+		return fmt.Errorf("Transaction.CreateOutcome : %v", err)
 	}
 
 	return nil
