@@ -1,7 +1,7 @@
 package main
 
-import "fmt"
+import . "github.com/seagalputra/cashlog/web"
 
 func main() {
-	fmt.Println("Starting cashlog application...")
+	StartServer()
 }

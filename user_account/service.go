@@ -3,9 +3,10 @@ package user_account
 import (
 	"errors"
 	"fmt"
+	"time"
+
 	"github.com/dgrijalva/jwt-go"
 	uuid "github.com/satori/go.uuid"
-	"time"
 )
 
 type UserAccountService interface {
@@ -27,7 +28,7 @@ func (u *UserAccountServiceImpl) Authenticate(request *AuthenticateUserRequest) 
 		return nil, errors.New("Username or Password is invalid! ")
 	}
 
-	token, err := createToken(userAccount.Id)
+	token, err := createToken(userAccount.ID)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to create token : %v ", err)
 	}
@@ -37,12 +38,12 @@ func (u *UserAccountServiceImpl) Authenticate(request *AuthenticateUserRequest) 
 	return response, nil
 }
 
-func createToken(userId int64) (string, error) {
+func createToken(userID int64) (string, error) {
 	// TODO: Change this secret key with key from environment variable
 	secret := "asdfghjkl"
 	claims := jwt.MapClaims{}
 	claims["authorized"] = true
-	claims["user_id"] = userId
+	claims["user_id"] = userID
 	claims["exp"] = time.Now().Add(time.Minute * 15).Unix()
 
 	unsignedToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -55,11 +56,11 @@ func createToken(userId int64) (string, error) {
 }
 
 func (u *UserAccountServiceImpl) RegisterAccount(request *RegisterAccountRequest) (string, error) {
-	userId := uuid.NewV4().String()
+	userID := uuid.NewV4().String()
 
 	// TODO: encrypt and salt user password
 	account := &UserAccount{
-		UserId:     userId,
+		UserID:     userID,
 		FirstName:  request.FirstName,
 		LastName:   request.LastName,
 		Username:   request.Username,
@@ -73,5 +74,5 @@ func (u *UserAccountServiceImpl) RegisterAccount(request *RegisterAccountRequest
 		return "", fmt.Errorf("Failed to registering account : %v ", err)
 	}
 
-	return account.UserId, nil
+	return account.UserID, nil
 }

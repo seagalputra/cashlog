@@ -6,10 +6,10 @@ type GenericResponse struct {
 	Data    interface{} `json:"data"`
 }
 
-func (g *GenericResponse) SuccessResponse(message string, data interface{}) GenericResponse {
+func SuccessResponse(message string, data interface{}) GenericResponse {
 	return GenericResponse{Message: message, Data: data}
 }
 
-func (g *GenericResponse) ErrorResponse(message string) GenericResponse {
+func ErrorResponse(message string) GenericResponse {
 	return GenericResponse{Message: message, Error: true}
 }

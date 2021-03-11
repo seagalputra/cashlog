@@ -1,28 +1,28 @@
 package transaction
 
 import (
-	. "github.com/seagalputra/cashlog/user_account"
-	"math/big"
 	"time"
+
+	"github.com/seagalputra/cashlog/user_account"
 )
 
 type (
 	Transaction struct {
-		Id              int64
-		TransactionId   string
+		ID              int64
+		TransactionID   string
 		Title           string
-		Amount          big.Float
+		Amount          string
 		TransactionDate time.Time
 		Detail          TransactionDetail
-		UserAccount     UserAccount
+		UserAccount     user_account.UserAccount
 	}
 
 	TransactionDetail struct {
-		Id                  int64
-		TransactionDetailId string
-		Needs               big.Float
-		Wants               big.Float
-		Invest              big.Float
+		ID                  int64
+		TransactionDetailID string
+		Needs               string
+		Wants               string
+		Invest              string
 		Description         string
 		Status              string
 	}

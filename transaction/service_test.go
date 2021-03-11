@@ -1,13 +1,13 @@
 package transaction
 
 import (
+	"testing"
+	"time"
+
 	uuid "github.com/satori/go.uuid"
 	. "github.com/seagalputra/cashlog/user_account"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"math/big"
-	"testing"
-	"time"
 )
 
 func TestTransactionServiceImpl_CreateOutcomeTransactionNeeds(t *testing.T) {
@@ -16,19 +16,18 @@ func TestTransactionServiceImpl_CreateOutcomeTransactionNeeds(t *testing.T) {
 
 	transactionService := &TransactionServiceImpl{transactionRepository, userAccountRepository}
 
-	amount := new(big.Float).SetInt64(-15_000)
 	request := CreateOutcomeTransactionRequest{
-		UserId:          1,
+		UserID:          1,
 		Title:           "Lunch",
-		Amount:          *amount,
+		Amount:          "-15000.00",
 		TransactionDate: time.Now(),
 		Description:     "A some description",
 		TransactionType: "needs",
 	}
 
 	savedAccount := &UserAccount{
-		Id:         1,
-		UserId:     uuid.NewV4().String(),
+		ID:         1,
+		UserID:     uuid.NewV4().String(),
 		FirstName:  "Dwiferdio Seagal",
 		LastName:   "Putra",
 		Username:   "test1234",
@@ -40,13 +39,13 @@ func TestTransactionServiceImpl_CreateOutcomeTransactionNeeds(t *testing.T) {
 
 	userAccountRepository.On("FindByID", mock.Anything).Return(savedAccount, nil)
 	transactionRepository.On("Save", mock.MatchedBy(func(req Transaction) bool {
-		assert.Equal(t, request.UserId, req.UserAccount.Id)
+		assert.Equal(t, request.UserID, req.UserAccount.ID)
 		assert.Equal(t, request.Title, req.Title)
 		assert.Equal(t, request.Amount, req.Amount)
 		assert.Equal(t, request.Description, req.Detail.Description)
 		assert.Equal(t, request.Amount, req.Detail.Needs)
-		assert.Equal(t, big.Float{}, req.Detail.Wants)
-		assert.Equal(t, big.Float{}, req.Detail.Invest)
+		assert.Equal(t, "", req.Detail.Wants)
+		assert.Equal(t, "", req.Detail.Invest)
 		return true
 	})).Return(nil)
 
@@ -60,19 +59,18 @@ func TestTransactionServiceImpl_CreateOutcomeTransactionWants(t *testing.T) {
 
 	transactionService := &TransactionServiceImpl{transactionRepository, userAccountRepository}
 
-	amount := new(big.Float).SetInt64(-25_000)
 	request := CreateOutcomeTransactionRequest{
-		UserId:          1,
+		UserID:          1,
 		Title:           "Snack",
-		Amount:          *amount,
+		Amount:          "-25000.00",
 		TransactionDate: time.Now(),
 		Description:     "A some description",
 		TransactionType: "wants",
 	}
 
 	savedAccount := &UserAccount{
-		Id:         1,
-		UserId:     uuid.NewV4().String(),
+		ID:         1,
+		UserID:     uuid.NewV4().String(),
 		FirstName:  "Dwiferdio Seagal",
 		LastName:   "Putra",
 		Username:   "test1234",
@@ -84,13 +82,13 @@ func TestTransactionServiceImpl_CreateOutcomeTransactionWants(t *testing.T) {
 
 	userAccountRepository.On("FindByID", mock.Anything).Return(savedAccount, nil)
 	transactionRepository.On("Save", mock.MatchedBy(func(req Transaction) bool {
-		assert.Equal(t, request.UserId, req.UserAccount.Id)
+		assert.Equal(t, request.UserID, req.UserAccount.ID)
 		assert.Equal(t, request.Title, req.Title)
 		assert.Equal(t, request.Amount, req.Amount)
 		assert.Equal(t, request.Description, req.Detail.Description)
 		assert.Equal(t, request.Amount, req.Detail.Wants)
-		assert.Equal(t, big.Float{}, req.Detail.Needs)
-		assert.Equal(t, big.Float{}, req.Detail.Invest)
+		assert.Equal(t, "", req.Detail.Needs)
+		assert.Equal(t, "", req.Detail.Invest)
 		return true
 	})).Return(nil)
 
@@ -104,17 +102,16 @@ func TestTransactionServiceImpl_CreateIncomeTransaction(t *testing.T) {
 
 	transactionService := &TransactionServiceImpl{transactionRepository, userAccountRepository}
 
-	amount := new(big.Float).SetInt64(3_000_000)
 	request := &CreateIncomeTransactionRequest{
 		Title:           "Salary",
-		Amount:          *amount,
+		Amount:          "3000000.00",
 		TransactionDate: time.Now(),
 		Description:     "Monthly salary income",
 	}
 
 	savedAccount := &UserAccount{
-		Id:         1,
-		UserId:     uuid.NewV4().String(),
+		ID:         1,
+		UserID:     uuid.NewV4().String(),
 		FirstName:  "Dwiferdio Seagal",
 		LastName:   "Putra",
 		Username:   "test1234",
@@ -130,14 +127,9 @@ func TestTransactionServiceImpl_CreateIncomeTransaction(t *testing.T) {
 		assert.Equal(t, request.Amount, req.Amount)
 		assert.Equal(t, request.Description, req.Detail.Description)
 
-		expectedNeeds := new(big.Float).SetFloat64(1_500_000)
-		assert.Equal(t, expectedNeeds.String(), req.Detail.Needs.String())
-
-		expectedWants := new(big.Float).SetFloat64(1_200_000)
-		assert.Equal(t, expectedWants.String(), req.Detail.Wants.String())
-
-		expectedInvest := new(big.Float).SetFloat64(300_000)
-		assert.Equal(t, expectedInvest.String(), req.Detail.Invest.String())
+		assert.Equal(t, "1500000.00", req.Detail.Needs)
+		assert.Equal(t, "1200000.00", req.Detail.Wants)
+		assert.Equal(t, "300000.00", req.Detail.Invest)
 		return true
 	})).Return(nil)
 

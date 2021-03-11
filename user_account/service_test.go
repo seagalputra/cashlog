@@ -29,9 +29,9 @@ func TestUserAccountServiceImpl_RegisterAccount(t *testing.T) {
 		return true
 	})).Return(nil)
 
-	userId, err := userAccountService.RegisterAccount(&userRequest)
+	userID, err := userAccountService.RegisterAccount(&userRequest)
 	assert.NoError(t, err)
-	assert.NotNil(t, userId)
+	assert.NotNil(t, userID)
 }
 
 func TestUserAccountServiceImpl_AuthenticateUser(t *testing.T) {
@@ -45,8 +45,8 @@ func TestUserAccountServiceImpl_AuthenticateUser(t *testing.T) {
 	}
 
 	savedAccount := &UserAccount{
-		Id:         1,
-		UserId:     "some user id",
+		ID:         1,
+		UserID:     "some user id",
 		FirstName:  "Dwiferdio Seagal",
 		LastName:   "Putra",
 		Username:   "test1234",

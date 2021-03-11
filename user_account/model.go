@@ -1,8 +1,8 @@
 package user_account
 
 type UserAccount struct {
-	Id         int64
-	UserId     string
+	ID         int64
+	UserID     string
 	FirstName  string
 	LastName   string
 	Username   string

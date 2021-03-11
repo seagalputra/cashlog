@@ -1,25 +1,24 @@
 package transaction
 
 import (
-	"math/big"
 	"time"
 )
 
 type (
 	CreateOutcomeTransactionRequest struct {
-		UserId            int64
-		Title             string
-		Amount            big.Float
-		TransactionDate   time.Time
-		Description       string
-		TransactionStatus string
-		TransactionType   string // consist of needs, wants or invest
+		UserID            int64     `json:"userId"`
+		Title             string    `json:"title"`
+		Amount            string    `json:"amount"`
+		TransactionDate   time.Time `json:"date"`
+		Description       string    `json:"description"`
+		TransactionStatus string    `json:"status"`
+		TransactionType   string    `json:"type"`
 	}
 
 	CreateIncomeTransactionRequest struct {
-		UserId            int64
+		UserID            int64
 		Title             string
-		Amount            big.Float
+		Amount            string
 		TransactionDate   time.Time
 		Description       string
 		TransactionStatus string

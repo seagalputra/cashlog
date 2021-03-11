@@ -2,10 +2,11 @@ package transaction
 
 import (
 	"fmt"
-	uuid "github.com/satori/go.uuid"
-	. "github.com/seagalputra/cashlog/user_account"
-	"math/big"
+	"strconv"
 	"time"
+
+	uuid "github.com/satori/go.uuid"
+	"github.com/seagalputra/cashlog/user_account"
 )
 
 type TransactionService interface {
@@ -15,14 +16,14 @@ type TransactionService interface {
 }
 
 type TransactionServiceImpl struct {
-	transactionRepository TransactionRepository
-	userAccountRepository UserAccountRepository
+	TransactionRepository TransactionRepository
+	UserAccountRepository user_account.UserAccountRepository
 }
 
 const (
-	NeedsRatio  = 0.5
-	WantsRatio  = 0.4
-	InvestRatio = 0.1
+	needsRatio  = 0.5
+	wantsRatio  = 0.4
+	investRatio = 0.1
 )
 
 func (t *TransactionServiceImpl) Show(from string, to string) ([]Transaction, error) {
@@ -30,29 +31,33 @@ func (t *TransactionServiceImpl) Show(from string, to string) ([]Transaction, er
 }
 
 func (t *TransactionServiceImpl) CreateIncome(request CreateIncomeTransactionRequest) error {
-	account, err := t.userAccountRepository.FindByID(request.UserId)
+	account, err := t.UserAccountRepository.FindByID(request.UserID)
 	if err != nil {
-		return fmt.Errorf("User with id %v not found : %v ", request.UserId, err)
+		return fmt.Errorf("User with id %v not found : %v ", request.UserID, err)
 	}
 
-	transactionId := uuid.NewV4().String()
-	transactionDetailId := uuid.NewV4().String()
+	transactionID := uuid.NewV4().String()
+	transactionDetailID := uuid.NewV4().String()
+	amount, err := strconv.ParseFloat(request.Amount, 64)
+	if err != nil {
+		return fmt.Errorf("Failed to save income transaction : %v ", err)
+	}
 
-	needs := new(big.Float).Mul(big.NewFloat(NeedsRatio), &request.Amount)
-	wants := new(big.Float).Mul(big.NewFloat(WantsRatio), &request.Amount)
-	invest := new(big.Float).Mul(big.NewFloat(InvestRatio), &request.Amount)
+	needs := strconv.FormatFloat(needsRatio*amount, 'f', 2, 64)
+	wants := strconv.FormatFloat(wantsRatio*amount, 'f', 2, 64)
+	invest := strconv.FormatFloat(investRatio*amount, 'f', 2, 64)
 
 	transactionDetail := &TransactionDetail{
-		TransactionDetailId: transactionDetailId,
-		Needs:               *needs,
-		Wants:               *wants,
-		Invest:              *invest,
+		TransactionDetailID: transactionDetailID,
+		Needs:               needs,
+		Wants:               wants,
+		Invest:              invest,
 		Description:         request.Description,
 		Status:              request.TransactionStatus,
 	}
 
 	transaction := &Transaction{
-		TransactionId:   transactionId,
+		TransactionID:   transactionID,
 		Title:           request.Title,
 		Amount:          request.Amount,
 		TransactionDate: time.Now(),
@@ -60,7 +65,7 @@ func (t *TransactionServiceImpl) CreateIncome(request CreateIncomeTransactionReq
 		UserAccount:     *account,
 	}
 
-	err = t.transactionRepository.Save(*transaction)
+	err = t.TransactionRepository.Save(*transaction)
 	if err != nil {
 		return fmt.Errorf("Failed to save income transaction : %v ", err)
 	}
@@ -69,16 +74,16 @@ func (t *TransactionServiceImpl) CreateIncome(request CreateIncomeTransactionReq
 }
 
 func (t *TransactionServiceImpl) CreateOutcome(request CreateOutcomeTransactionRequest) error {
-	account, err := t.userAccountRepository.FindByID(request.UserId)
+	account, err := t.UserAccountRepository.FindByID(request.UserID)
 	if err != nil {
-		return fmt.Errorf("User with id %v not found : %v ", request.UserId, err)
+		return fmt.Errorf("User with id %v not found : %v ", request.UserID, err)
 	}
 
-	transactionId := uuid.NewV4().String()
-	transactionDetailId := uuid.NewV4().String()
+	transactionID := uuid.NewV4().String()
+	transactionDetailID := uuid.NewV4().String()
 
 	transactionDetail := &TransactionDetail{
-		TransactionDetailId: transactionDetailId,
+		TransactionDetailID: transactionDetailID,
 		Description:         request.Description,
 		Status:              request.TransactionStatus,
 	}
@@ -93,7 +98,7 @@ func (t *TransactionServiceImpl) CreateOutcome(request CreateOutcomeTransactionR
 	}
 
 	transaction := &Transaction{
-		TransactionId:   transactionId,
+		TransactionID:   transactionID,
 		Title:           request.Title,
 		Amount:          request.Amount,
 		TransactionDate: time.Now(),
@@ -101,7 +106,7 @@ func (t *TransactionServiceImpl) CreateOutcome(request CreateOutcomeTransactionR
 		UserAccount:     *account,
 	}
 
-	err = t.transactionRepository.Save(*transaction)
+	err = t.TransactionRepository.Save(*transaction)
 	if err != nil {
 		return fmt.Errorf("Failed to save outcome transaction : %v ", err)
 	}

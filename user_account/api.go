@@ -10,7 +10,7 @@ type (
 	}
 
 	RegisterAccountResponse struct {
-		UserAccountId string `json:"id"`
+		UserAccountID string `json:"id"`
 		FirstName     string `json:"firstName"`
 		LastName      string `json:"lastName"`
 		Username      string `json:"username"`
