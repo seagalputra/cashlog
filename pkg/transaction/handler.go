@@ -15,6 +15,6 @@ func (t *Handler) SaveOutcomeTransaction(ctx *fiber.Ctx) error {
 }
 
 // SaveIncomeTransaction for handling request and response to save income transaction
-func (t *Handler) SaveIncomeTransaction(ctx *fiber.Ctx) {
+func (t *Handler) SaveIncomeTransaction(ctx *fiber.Ctx) error {
 	panic("Implement me")
 }

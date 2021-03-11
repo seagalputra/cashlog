@@ -13,7 +13,7 @@ type Repository interface {
 
 // RepositoryImpl is implementation details for interacting with user table in database.
 type RepositoryImpl struct {
-	db *sql.DB
+	DB *sql.DB
 }
 
 // Save is function to storing user data into user table.

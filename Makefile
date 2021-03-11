@@ -1,9 +1,13 @@
+APP_ENVIRONMENT=config
 DB_NAME=cashlog
 TEST_DB_NAME=cashlog_test
 DB_PORT=5432
 TEST_DB_PORT=5432
 DB_USER=postgres
 DB_PASSWORD=
+
+run-monolith:
+	APP_ENV=${APP_ENVIRONMENT} go run cmd/cashlog/main.go
 
 test:
 	go test ./...

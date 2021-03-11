@@ -18,23 +18,24 @@ type Service interface {
 
 // ServiceImpl is implementation details for dealing with business logic related with user.
 type ServiceImpl struct {
-	UserAccountRepo Repository
+	UserRepo Repository
 }
 
 // Authenticate is function for authentice user account.
 func (u *ServiceImpl) Authenticate(request *AuthenticateRequest) (*AuthenticateResponse, error) {
-	userAccount, err := u.UserAccountRepo.FindByUsername(request.Username)
+	userAccount, err := u.UserRepo.FindByUsername(request.Username)
 	if err != nil {
-		return nil, fmt.Errorf("User with username %s not found : %v ", request.Username, err)
+		return nil, fmt.Errorf("User.Authenticate : %v", err)
 	}
 
+	// TODO : Validate username and encoded password
 	if userAccount.Username != request.Username || userAccount.Password != request.Password {
-		return nil, errors.New("Username or Password is invalid! ")
+		return nil, errors.New("Username or Password is invalid")
 	}
 
 	token, err := u.createToken(userAccount.ID)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to create token : %v ", err)
+		return nil, fmt.Errorf("User.Authenticate : %v", err)
 	}
 
 	response := &AuthenticateResponse{Token: token}
@@ -53,7 +54,7 @@ func (u *ServiceImpl) createToken(userID int64) (string, error) {
 	unsignedToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	token, err := unsignedToken.SignedString([]byte(secret))
 	if err != nil {
-		return "", fmt.Errorf("Failed to sign token : %v ", err)
+		return "", fmt.Errorf("User.createToken : %v", err)
 	}
 
 	return token, nil
@@ -65,7 +66,7 @@ func (u *ServiceImpl) RegisterAccount(request *RegisterRequest) (string, error) 
 
 	encrypted, err := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.DefaultCost)
 	if err != nil {
-		return "", errors.New(err.Error())
+		return "", fmt.Errorf("User.RegisterAccount : %v", err)
 	}
 
 	account := &User{
@@ -79,8 +80,8 @@ func (u *ServiceImpl) RegisterAccount(request *RegisterRequest) (string, error) 
 		IsVerified: false,
 	}
 
-	if err := u.UserAccountRepo.Save(account); err != nil {
-		return "", fmt.Errorf("Failed to registering account : %v ", err)
+	if err := u.UserRepo.Save(account); err != nil {
+		return "", fmt.Errorf("User.RegisterAccount : %v", err)
 	}
 
 	return account.UserID, nil

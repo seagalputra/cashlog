@@ -2,41 +2,32 @@ package server
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/seagalputra/cashlog/pkg/db"
+	"github.com/seagalputra/cashlog/pkg/config"
 	"github.com/seagalputra/cashlog/pkg/transaction"
 	"github.com/seagalputra/cashlog/pkg/user"
 )
 
 // Server definition
 type Server struct {
-	TransactionHandler transaction.Handler
+	Config             config.Config
 	UserHandler        user.Handler
+	TransactionHandler transaction.Handler
 }
 
 // Start server
 func (s *Server) Start() {
 	app := fiber.New()
 
-	config, err := GetConfig(os.Getenv("APP_ENV"), ".")
-	if err != nil {
-		panic(err)
-	}
+	v1 := app.Group("/api/v1")
+	v1.Post("/transactions/income", s.TransactionHandler.SaveIncomeTransaction)
+	v1.Post("/transactions/outcome", s.TransactionHandler.SaveOutcomeTransaction)
+	v1.Post("/users/register", s.UserHandler.Register)
+	v1.Post("/users/login", s.UserHandler.Authenticate)
 
-	conn, err := db.Connect(config.DBUrl)
+	err := app.Listen(fmt.Sprintf(":%s", s.Config.Port))
 	if err != nil {
-		panic(err)
-	}
-	defer conn.Close()
-
-	app.Get("/ping", func(ctx *fiber.Ctx) error {
-		return ctx.JSON("Pong")
-	})
-
-	err = app.Listen(fmt.Sprintf(":%s", config.Port))
-	if err != nil {
-		fmt.Printf("Error starting server : %v", err)
+		fmt.Printf("Server.Start : %v", err)
 	}
 }

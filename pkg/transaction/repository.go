@@ -12,7 +12,7 @@ type Repository interface {
 
 // RepositoryImpl is implementation details for interacting domain model with database.
 type RepositoryImpl struct {
-	db *sql.DB
+	DB *sql.DB
 }
 
 // FindByID querying transaction data based on their row id.
