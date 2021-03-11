@@ -12,7 +12,7 @@ import (
 
 // Service interface definition for dealing with business logic related with user.
 type Service interface {
-	RegisterAccount(request *RegisterRequest) (string, error)
+	RegisterAccount(request *RegisterRequest) (*RegisterResponse, error)
 	Authenticate(request *AuthenticateRequest) (*AuthenticateResponse, error)
 }
 
@@ -61,12 +61,12 @@ func (u *ServiceImpl) createToken(userID int64) (string, error) {
 }
 
 // RegisterAccount is function for registering given account
-func (u *ServiceImpl) RegisterAccount(request *RegisterRequest) (string, error) {
+func (u *ServiceImpl) RegisterAccount(request *RegisterRequest) (*RegisterResponse, error) {
 	userID := uuid.NewV4().String()
 
 	encrypted, err := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.DefaultCost)
 	if err != nil {
-		return "", fmt.Errorf("User.RegisterAccount : %v", err)
+		return nil, fmt.Errorf("User.RegisterAccount : %v", err)
 	}
 
 	account := &User{
@@ -81,8 +81,14 @@ func (u *ServiceImpl) RegisterAccount(request *RegisterRequest) (string, error) 
 	}
 
 	if err := u.UserRepo.Save(account); err != nil {
-		return "", fmt.Errorf("User.RegisterAccount : %v", err)
+		return nil, fmt.Errorf("User.RegisterAccount : %v", err)
 	}
 
-	return account.UserID, nil
+	return &RegisterResponse{
+		UserAccountID: userID,
+		FirstName:     request.FirstName,
+		LastName:      request.LastName,
+		Username:      request.Username,
+		Email:         request.Email,
+	}, nil
 }

@@ -28,9 +28,9 @@ func TestUserServiceImpl_RegisterAccount(t *testing.T) {
 		return true
 	})).Return(nil)
 
-	userID, err := userAccountService.RegisterAccount(&userRequest)
+	response, err := userAccountService.RegisterAccount(&userRequest)
 	assert.NoError(t, err)
-	assert.NotNil(t, userID)
+	assert.NotNil(t, response)
 }
 
 func TestUserServiceImpl_AuthenticateUser(t *testing.T) {

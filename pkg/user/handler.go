@@ -11,36 +11,17 @@ type Handler struct {
 func (h *Handler) Register(ctx *fiber.Ctx) error {
 	request := new(RegisterRequest)
 
-	errResponse := struct {
-		IsError bool   `json:"is_error"`
-		Message string `json:"message"`
-		Data    interface{}
-	}{
-		IsError: true,
-		Message: "Failed to register user",
-		Data:    nil,
-	}
-
 	err := ctx.BodyParser(&request)
 	if err != nil {
-		ctx.Status(fiber.StatusInternalServerError).JSON(errResponse)
+		return err
 	}
 
-	userID, err := h.UserService.RegisterAccount(request)
+	response, err := h.UserService.RegisterAccount(request)
 	if err != nil {
-		ctx.Status(fiber.StatusInternalServerError).JSON(errResponse)
+		return err
 	}
 
-	successResponse := struct {
-		IsError bool   `json:"is_error"`
-		Message string `json:"message"`
-		Data    interface{}
-	}{
-		IsError: false,
-		Message: "Success",
-		Data:    userID,
-	}
-	ctx.Status(fiber.StatusOK).JSON(successResponse)
+	ctx.Status(fiber.StatusOK).JSON(response)
 
 	return nil
 }
