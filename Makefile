@@ -1,4 +1,4 @@
-APP_ENVIRONMENT=config
+APP_ENVIRONMENT=local
 DB_NAME=cashlog
 TEST_DB_NAME=cashlog_test
 DB_PORT=5432
