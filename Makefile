@@ -9,6 +9,9 @@ DB_PASSWORD=
 run-monolith:
 	APP_ENV=${APP_ENVIRONMENT} go run cmd/cashlog/main.go
 
+generate-docs:
+	swag init --parseDependency --parseInternal --parseDepth 1 --dir ./cmd/cashlog
+
 test:
 	go test ./...
 

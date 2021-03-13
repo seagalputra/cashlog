@@ -7,7 +7,15 @@ type Handler struct {
 	UserService Service
 }
 
-// Register function for registering new account
+// Register registers a new user data
+// @Summary Register a new user
+// @Description Register user
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param user body RegisterRequest true "Register user"
+// @Success 201 {object} RegisterResponse{}
+// @Router /v1/users/register [post]
 func (h *Handler) Register(ctx *fiber.Ctx) error {
 	req := new(RegisterRequest)
 
@@ -20,7 +28,7 @@ func (h *Handler) Register(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	ctx.Status(fiber.StatusOK).JSON(res)
+	ctx.Status(fiber.StatusCreated).JSON(res)
 
 	return nil
 }

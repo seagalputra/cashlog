@@ -8,8 +8,18 @@ import (
 	"github.com/seagalputra/cashlog/pkg/server"
 	"github.com/seagalputra/cashlog/pkg/transaction"
 	"github.com/seagalputra/cashlog/pkg/user"
+
+	_ "github.com/seagalputra/cashlog/docs"
 )
 
+// @title Cashlog App
+// @version 1.0
+// @description This is an API for Cashlog Application
+
+// @contact.name Dwiferdio Seagal Putra
+// @contact.email seagalputra@gmail.com
+
+// @BasePath /api
 func main() {
 	err := config.ReadConfig(os.Getenv("APP_ENV"), ".")
 	if err != nil {

@@ -1,0 +1,59 @@
+basePath: /api
+definitions:
+  user.RegisterRequest:
+    properties:
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  user.RegisterResponse:
+    properties:
+      email:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: string
+      last_name:
+        type: string
+      username:
+        type: string
+    type: object
+info:
+  contact:
+    email: seagalputra@gmail.com
+    name: Dwiferdio Seagal Putra
+  description: This is an API for Cashlog Application
+  title: Cashlog App
+  version: "1.0"
+paths:
+  /v1/users/register:
+    post:
+      consumes:
+      - application/json
+      description: Register user
+      parameters:
+      - description: Register user
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/user.RegisterResponse'
+      summary: Register a new user
+      tags:
+      - users
+swagger: "2.0"
