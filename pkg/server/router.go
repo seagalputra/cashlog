@@ -19,9 +19,28 @@ type Server struct {
 	TransactionHandler transaction.Handler
 }
 
+func errorHandler(ctx *fiber.Ctx, err error) error {
+	code := fiber.StatusInternalServerError
+
+	if e, ok := err.(*fiber.Error); ok {
+		code = e.Code
+	}
+
+	ctx.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSON)
+	return ctx.Status(code).JSON(
+		fiber.Map{
+			"message": err.Error(),
+		},
+	)
+}
+
 // Start server
 func (s *Server) Start() {
-	app := fiber.New()
+	app := fiber.New(
+		fiber.Config{
+			ErrorHandler: errorHandler,
+		},
+	)
 
 	app.Use(cors.New())
 	app.Use(logger.New(logger.Config{
@@ -40,6 +59,6 @@ func (s *Server) Start() {
 
 	err := app.Listen(fmt.Sprintf(":%s", config.Get("PORT")))
 	if err != nil {
-		fmt.Printf("Server.Start : %v", err)
+		panic("Error starting server")
 	}
 }

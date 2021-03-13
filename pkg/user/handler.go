@@ -20,12 +20,12 @@ func (h *Handler) Register(ctx *fiber.Ctx) error {
 	req := new(RegisterRequest)
 
 	if err := ctx.BodyParser(&req); err != nil {
-		return err
+		return fiber.NewError(400, "Something wrong with request data")
 	}
 
 	res, err := h.UserService.RegisterAccount(*req)
 	if err != nil {
-		return err
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 
 	ctx.Status(fiber.StatusCreated).JSON(res)
@@ -38,12 +38,12 @@ func (h *Handler) Authenticate(ctx *fiber.Ctx) error {
 	req := new(AuthenticateRequest)
 
 	if err := ctx.BodyParser(&req); err != nil {
-		return err
+		return fiber.NewError(400, "Something wrong with request data")
 	}
 
 	res, err := h.UserService.Authenticate(*req)
 	if err != nil {
-		return err
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 
 	ctx.Status(fiber.StatusOK).JSON(res)

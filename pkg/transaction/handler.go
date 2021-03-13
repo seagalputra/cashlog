@@ -14,12 +14,12 @@ func (t *Handler) SaveOutcomeTransaction(ctx *fiber.Ctx) error {
 	req := new(CreateOutcomeRequest)
 
 	if err := ctx.BodyParser(&req); err != nil {
-		return err
+		return fiber.NewError(400, "Something wrong with request data")
 	}
 
 	err := t.TransactionService.CreateOutcome(*req)
 	if err != nil {
-		return err
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 
 	ctx.Status(fiber.StatusCreated)
@@ -32,12 +32,12 @@ func (t *Handler) SaveIncomeTransaction(ctx *fiber.Ctx) error {
 	req := new(CreateIncomeRequest)
 
 	if err := ctx.BodyParser(&req); err != nil {
-		return err
+		return fiber.NewError(400, "Something wrong with request data")
 	}
 
 	err := t.TransactionService.CreateIncome(*req)
 	if err != nil {
-		return err
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 
 	ctx.Status(fiber.StatusCreated)
