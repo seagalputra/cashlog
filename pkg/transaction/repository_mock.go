@@ -20,5 +20,6 @@ func (t *RepositoryMock) Save(transaction Transaction) error {
 }
 
 func (t *RepositoryMock) SaveDetail(transactionDetail Detail) (*Detail, error) {
-	panic("implement me")
+	args := t.Called(transactionDetail)
+	return args.Get(0).(*Detail), args.Error(1)
 }
