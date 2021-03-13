@@ -1,6 +1,7 @@
 package user
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -20,6 +21,7 @@ func TestUserServiceImpl_RegisterAccount(t *testing.T) {
 		Email:     "testing1234@email.com",
 	}
 
+	repo.On("FindByUsername", mock.Anything).Return(&User{}, errors.New("No result set"))
 	repo.On("Save", mock.MatchedBy(func(req *User) bool {
 		assert.Equal(t, userRequest.Email, req.Email)
 		assert.Equal(t, userRequest.FirstName, req.FirstName)
@@ -28,9 +30,12 @@ func TestUserServiceImpl_RegisterAccount(t *testing.T) {
 		return true
 	})).Return(nil)
 
-	response, err := userAccountService.RegisterAccount(&userRequest)
+	response, err := userAccountService.RegisterAccount(userRequest)
 	assert.NoError(t, err)
 	assert.NotNil(t, response)
+
+	repo.AssertNumberOfCalls(t, "FindByUsername", 1)
+	repo.AssertNumberOfCalls(t, "Save", 1)
 }
 
 func TestUserServiceImpl_AuthenticateUser(t *testing.T) {
@@ -38,7 +43,7 @@ func TestUserServiceImpl_AuthenticateUser(t *testing.T) {
 
 	userAccountService := &ServiceImpl{repo}
 
-	authenticeRequest := &AuthenticateRequest{
+	authenticeRequest := AuthenticateRequest{
 		Username: "test1234",
 		Password: "12345",
 	}
@@ -61,4 +66,6 @@ func TestUserServiceImpl_AuthenticateUser(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.NotNil(t, response)
+
+	repo.AssertNumberOfCalls(t, "FindByUsername", 1)
 }

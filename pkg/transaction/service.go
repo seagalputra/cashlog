@@ -62,12 +62,17 @@ func (t *ServiceImpl) CreateIncome(request CreateIncomeRequest) error {
 		Status:              request.TransactionStatus,
 	}
 
+	detail, err := t.TransactionRepository.SaveDetail(*transactionDetail)
+	if err != nil {
+		return fmt.Errorf("Transaction.CreateIncome : %v", err)
+	}
+
 	transaction := &Transaction{
 		TransactionID:   transactionID,
 		Title:           request.Title,
 		Amount:          request.Amount,
 		TransactionDate: request.TransactionDate,
-		Detail:          *transactionDetail,
+		Detail:          *detail,
 		User:            *account,
 	}
 
@@ -108,12 +113,17 @@ func (t *ServiceImpl) CreateOutcome(request CreateOutcomeRequest) error {
 		transactionDetail.Invest = request.Amount
 	}
 
+	detail, err := t.TransactionRepository.SaveDetail(*transactionDetail)
+	if err != nil {
+		return fmt.Errorf("Transaction.CreateOutcome : %v", err)
+	}
+
 	transaction := &Transaction{
 		TransactionID:   transactionID,
 		Title:           request.Title,
 		Amount:          request.Amount,
 		TransactionDate: request.TransactionDate,
-		Detail:          *transactionDetail,
+		Detail:          *detail,
 		User:            *account,
 	}
 

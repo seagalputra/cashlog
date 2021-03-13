@@ -9,24 +9,36 @@ type Handler struct {
 
 // Register function for registering new account
 func (h *Handler) Register(ctx *fiber.Ctx) error {
-	request := new(RegisterRequest)
+	req := new(RegisterRequest)
 
-	err := ctx.BodyParser(&request)
+	if err := ctx.BodyParser(&req); err != nil {
+		return err
+	}
+
+	res, err := h.UserService.RegisterAccount(*req)
 	if err != nil {
 		return err
 	}
 
-	response, err := h.UserService.RegisterAccount(request)
-	if err != nil {
-		return err
-	}
-
-	ctx.Status(fiber.StatusOK).JSON(response)
+	ctx.Status(fiber.StatusOK).JSON(res)
 
 	return nil
 }
 
 // Authenticate function for user login
 func (h *Handler) Authenticate(ctx *fiber.Ctx) error {
-	panic("Implement me")
+	req := new(AuthenticateRequest)
+
+	if err := ctx.BodyParser(&req); err != nil {
+		return err
+	}
+
+	res, err := h.UserService.Authenticate(*req)
+	if err != nil {
+		return err
+	}
+
+	ctx.Status(fiber.StatusOK).JSON(res)
+
+	return nil
 }

@@ -23,6 +23,6 @@ type (
 		Amount            string    `json:"amount"`
 		TransactionDate   time.Time `json:"transaction_date"`
 		Description       string    `json:"description"`
-		TransactionStatus string    `json:"transaction_status"`
+		TransactionStatus string    `json:"status"`
 	}
 )

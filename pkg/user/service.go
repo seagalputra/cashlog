@@ -12,8 +12,8 @@ import (
 
 // Service interface definition for dealing with business logic related with user.
 type Service interface {
-	RegisterAccount(request *RegisterRequest) (*RegisterResponse, error)
-	Authenticate(request *AuthenticateRequest) (*AuthenticateResponse, error)
+	RegisterAccount(request RegisterRequest) (*RegisterResponse, error)
+	Authenticate(request AuthenticateRequest) (*AuthenticateResponse, error)
 }
 
 // ServiceImpl is implementation details for dealing with business logic related with user.
@@ -22,7 +22,7 @@ type ServiceImpl struct {
 }
 
 // Authenticate is function for authentice user account.
-func (u *ServiceImpl) Authenticate(request *AuthenticateRequest) (*AuthenticateResponse, error) {
+func (u *ServiceImpl) Authenticate(request AuthenticateRequest) (*AuthenticateResponse, error) {
 	userAccount, err := u.UserRepo.FindByUsername(request.Username)
 	if err != nil {
 		return nil, fmt.Errorf("User.Authenticate : %v", err)
@@ -61,8 +61,13 @@ func (u *ServiceImpl) createToken(userID int64) (string, error) {
 }
 
 // RegisterAccount is function for registering given account
-func (u *ServiceImpl) RegisterAccount(request *RegisterRequest) (*RegisterResponse, error) {
+func (u *ServiceImpl) RegisterAccount(request RegisterRequest) (*RegisterResponse, error) {
 	userID := uuid.NewV4().String()
+
+	_, err := u.UserRepo.FindByUsername(request.Username)
+	if err == nil {
+		return nil, errors.New("User already exist")
+	}
 
 	encrypted, err := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.DefaultCost)
 	if err != nil {
