@@ -8,6 +8,7 @@ import (
 type Repository interface {
 	FindByID(transactionID string) (*Transaction, error)
 	Save(transaction Transaction) error
+	SaveDetail(transactionDetail Detail) (*Detail, error)
 }
 
 // RepositoryImpl is implementation details for interacting domain model with database.
@@ -24,5 +25,10 @@ func (t *RepositoryImpl) FindByID(transactionID string) (*Transaction, error) {
 // Save is function to storing transaction data into database.
 // Only save one instance of transaction data
 func (t *RepositoryImpl) Save(transaction Transaction) error {
+	panic("implement me")
+}
+
+// SaveDetail will saving the transaction detail and return the Detail with saved id
+func (t *RepositoryImpl) SaveDetail(transactionDetail Detail) (*Detail, error) {
 	panic("implement me")
 }

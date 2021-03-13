@@ -30,11 +30,25 @@ func (u *RepositoryImpl) Save(account *User) error {
 
 // FindByID is function to finding user data based on their row id.
 func (u *RepositoryImpl) FindByID(id int64) (*User, error) {
-	panic("implement me")
+	savedUser := new(User)
+	query := "SELECT * FROM user_account WHERE user_account.id = $1"
+	err := u.DB.QueryRow(query, id).Scan(&savedUser.ID, &savedUser.UserID, &savedUser.FirstName, &savedUser.LastName, &savedUser.Username, &savedUser.Password, &savedUser.Email, &savedUser.IsDisabled, &savedUser.IsVerified)
+	if err != nil {
+		return nil, fmt.Errorf("UserRepository.FindByID : %v", err)
+	}
+
+	return savedUser, nil
 }
 
 // FindByUsername is function to finding user data based on their username.
 // Username is always unique. So, there aren't duplicate username in database.
 func (u *RepositoryImpl) FindByUsername(username string) (*User, error) {
-	panic("implement me")
+	savedUser := new(User)
+	query := "SELECT * FROM user_account WHERE user_account.username = $1"
+	err := u.DB.QueryRow(query, username).Scan(&savedUser.ID, &savedUser.UserID, &savedUser.FirstName, &savedUser.LastName, &savedUser.Username, &savedUser.Password, &savedUser.Email, &savedUser.IsDisabled, &savedUser.IsVerified)
+	if err != nil {
+		return nil, fmt.Errorf("UserRepository.FindByUsername : %v", err)
+	}
+
+	return savedUser, nil
 }

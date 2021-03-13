@@ -3,7 +3,6 @@ package transaction
 import (
 	"fmt"
 	"strconv"
-	"time"
 
 	uuid "github.com/satori/go.uuid"
 	"github.com/seagalputra/cashlog/pkg/user"
@@ -67,7 +66,7 @@ func (t *ServiceImpl) CreateIncome(request CreateIncomeRequest) error {
 		TransactionID:   transactionID,
 		Title:           request.Title,
 		Amount:          request.Amount,
-		TransactionDate: time.Now(),
+		TransactionDate: request.TransactionDate,
 		Detail:          *transactionDetail,
 		User:            *account,
 	}
@@ -95,6 +94,9 @@ func (t *ServiceImpl) CreateOutcome(request CreateOutcomeRequest) error {
 		TransactionDetailID: transactionDetailID,
 		Description:         request.Description,
 		Status:              request.TransactionStatus,
+		Needs:               "0.00",
+		Wants:               "0.00",
+		Invest:              "0.00",
 	}
 
 	switch request.TransactionType {
@@ -110,7 +112,7 @@ func (t *ServiceImpl) CreateOutcome(request CreateOutcomeRequest) error {
 		TransactionID:   transactionID,
 		Title:           request.Title,
 		Amount:          request.Amount,
-		TransactionDate: time.Now(),
+		TransactionDate: request.TransactionDate,
 		Detail:          *transactionDetail,
 		User:            *account,
 	}

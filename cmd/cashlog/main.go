@@ -11,12 +11,12 @@ import (
 )
 
 func main() {
-	config, err := config.GetConfig(os.Getenv("APP_ENV"), ".")
+	err := config.ReadConfig(os.Getenv("APP_ENV"), ".")
 	if err != nil {
 		panic(err)
 	}
 
-	conn, err := db.Connect(config.DBUrl)
+	conn, err := db.Connect(config.Get("DATABASE_URL"))
 	if err != nil {
 		panic(err)
 	}
@@ -31,7 +31,6 @@ func main() {
 	userHandler := user.Handler{UserService: userService}
 	transactionhandler := transaction.Handler{TransactionService: transactionService}
 	server := server.Server{
-		Config:             *config,
 		UserHandler:        userHandler,
 		TransactionHandler: transactionhandler,
 	}

@@ -11,7 +11,6 @@ import (
 
 // Server definition
 type Server struct {
-	Config             config.Config
 	UserHandler        user.Handler
 	TransactionHandler transaction.Handler
 }
@@ -26,7 +25,7 @@ func (s *Server) Start() {
 	v1.Post("/users/register", s.UserHandler.Register)
 	v1.Post("/users/login", s.UserHandler.Authenticate)
 
-	err := app.Listen(fmt.Sprintf(":%s", s.Config.Port))
+	err := app.Listen(fmt.Sprintf(":%s", config.Get("PORT")))
 	if err != nil {
 		fmt.Printf("Server.Start : %v", err)
 	}
