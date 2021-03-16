@@ -3,8 +3,8 @@ package main
 import (
 	"os"
 
-	"github.com/seagalputra/cashlog/internal/config"
-	"github.com/seagalputra/cashlog/internal/db"
+	"github.com/seagalputra/cashlog/internal/pkg/config"
+	"github.com/seagalputra/cashlog/internal/pkg/db"
 	"github.com/seagalputra/cashlog/internal/server"
 	"github.com/seagalputra/cashlog/internal/transaction"
 	"github.com/seagalputra/cashlog/internal/user"
@@ -39,11 +39,11 @@ func main() {
 	transactionService := &transaction.ServiceImpl{TransactionRepository: transactionRepo, UserRepository: userRepo}
 
 	userHandler := user.Handler{UserService: userService}
-	transactionhandler := transaction.Handler{TransactionService: transactionService}
-	server := server.Server{
+	transactionHandler := transaction.Handler{TransactionService: transactionService}
+	srv := server.Server{
 		UserHandler:        userHandler,
-		TransactionHandler: transactionhandler,
+		TransactionHandler: transactionHandler,
 	}
 
-	server.Start()
+	srv.Start()
 }

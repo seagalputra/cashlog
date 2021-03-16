@@ -7,7 +7,7 @@ require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/arsmn/fiber-swagger/v2 v2.3.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
-	github.com/go-chi/chi/v5 v5.0.1 // indirect
+	github.com/go-chi/chi v3.3.2+incompatible
 	github.com/go-openapi/spec v0.20.3 // indirect
 	github.com/gofiber/fiber/v2 v2.5.0
 	github.com/jackc/pgx/v4 v4.10.1

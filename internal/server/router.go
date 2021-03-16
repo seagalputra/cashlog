@@ -8,7 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
-	"github.com/seagalputra/cashlog/internal/config"
+	"github.com/seagalputra/cashlog/internal/pkg/config"
 	"github.com/seagalputra/cashlog/internal/transaction"
 	"github.com/seagalputra/cashlog/internal/user"
 )

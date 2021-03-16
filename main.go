@@ -3,8 +3,11 @@ package main
 import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
-	"github.com/seagalputra/cashlog/internal/config"
-	"github.com/seagalputra/cashlog/internal/db"
+	"github.com/seagalputra/cashlog/internal/auth"
+	"github.com/seagalputra/cashlog/internal/pkg/config"
+	"github.com/seagalputra/cashlog/internal/pkg/db"
+	"github.com/seagalputra/cashlog/internal/transaction"
+	"github.com/seagalputra/cashlog/internal/user"
 	"log"
 	"net/http"
 	"os"
@@ -31,13 +34,21 @@ func main() {
 
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
+	router.Use(auth.Middleware())
 
 	port := config.Get("PORT")
 	if port == "" {
 		port = defaultPort
 	}
 
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
+	userRepo := &user.RepositoryImpl{DB: conn}
+	userService := &user.ServiceImpl{UserRepo: userRepo}
+	transactionRepo := &transaction.RepositoryImpl{DB: conn}
+	transactionService := &transaction.ServiceImpl{TransactionRepository: transactionRepo, UserRepository: userRepo}
+	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{
+		UserService: userService,
+		TransactionService: transactionService,
+	}}))
 
 	router.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	router.Handle("/query", srv)

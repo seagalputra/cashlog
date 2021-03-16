@@ -22,6 +22,13 @@ type Login struct {
 	Password string `json:"password"`
 }
 
+type RegisterPayload struct {
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+	Username  string `json:"username"`
+	Email     string `json:"email"`
+}
+
 type RegisterUser struct {
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`

@@ -7,10 +7,7 @@ DB_USER=postgres
 DB_PASSWORD=
 
 run-monolith:
-	APP_ENV=${APP_ENVIRONMENT} go run server.go
-
-generate-docs:
-	swag init --parseDependency --parseInternal --parseDepth 1 --dir ./cmd/cashlog
+	APP_ENV=${APP_ENVIRONMENT} go run main.go
 
 generate-graphql:
 	go run github.com/99designs/gqlgen generate
@@ -27,10 +24,10 @@ db-drop:
 	dropdb -p ${DB_PORT} --if-exists -Upostgres ${DB_NAME}
 
 db-migrate:
-	migrate -database 'postgres://postgres@localhost:5432/${DB_NAME}?sslmode=disable&search_path=public' -path pkg/db/migrations up
+	migrate -database 'postgres://postgres@localhost:5432/${DB_NAME}?sslmode=disable&search_path=public' -path internal/pkg/db/migrations up
 
 db-migrate-down:
-	migrate -database 'postgres://postgres@localhost:5432/${DB_NAME}?sslmode=disable&search_path=public' -path pkg/db/migrations down
+	migrate -database 'postgres://postgres@localhost:5432/${DB_NAME}?sslmode=disable&search_path=public' -path internal/pkg/db/migrations down
 
 db-test-setup: db-test-create
 

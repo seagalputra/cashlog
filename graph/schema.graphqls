@@ -63,8 +63,15 @@ input CreateTransaction {
 	transactionType: String
 }
 
+type RegisterPayload {
+	firstName: String!
+	lastName: String!
+	username: String!
+	email: String!
+}
+
 type Mutation {
 	login(username: String!, password: String!): User!
-	register(input: RegisterUser!): User!
+	register(input: RegisterUser!): RegisterPayload!
 	createTransaction(input: CreateTransaction!): Transaction!
 }
