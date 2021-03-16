@@ -3,7 +3,7 @@ package transaction
 import (
 	"time"
 
-	"github.com/seagalputra/cashlog/pkg/user"
+	"github.com/seagalputra/cashlog/internal/user"
 )
 
 type (

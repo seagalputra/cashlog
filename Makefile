@@ -7,10 +7,13 @@ DB_USER=postgres
 DB_PASSWORD=
 
 run-monolith:
-	APP_ENV=${APP_ENVIRONMENT} go run cmd/cashlog/main.go
+	APP_ENV=${APP_ENVIRONMENT} go run server.go
 
 generate-docs:
 	swag init --parseDependency --parseInternal --parseDepth 1 --dir ./cmd/cashlog
+
+generate-graphql:
+	go run github.com/99designs/gqlgen generate
 
 test:
 	go test ./...

@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	uuid "github.com/satori/go.uuid"
-	"github.com/seagalputra/cashlog/pkg/user"
+	"github.com/seagalputra/cashlog/internal/user"
 )
 
 // Service interface for transaction

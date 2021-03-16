@@ -3,11 +3,11 @@ package main
 import (
 	"os"
 
-	"github.com/seagalputra/cashlog/pkg/config"
-	"github.com/seagalputra/cashlog/pkg/db"
-	"github.com/seagalputra/cashlog/pkg/server"
-	"github.com/seagalputra/cashlog/pkg/transaction"
-	"github.com/seagalputra/cashlog/pkg/user"
+	"github.com/seagalputra/cashlog/internal/config"
+	"github.com/seagalputra/cashlog/internal/db"
+	"github.com/seagalputra/cashlog/internal/server"
+	"github.com/seagalputra/cashlog/internal/transaction"
+	"github.com/seagalputra/cashlog/internal/user"
 
 	_ "github.com/seagalputra/cashlog/docs"
 )

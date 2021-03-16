@@ -1,0 +1,70 @@
+type Transaction {
+	id: ID!
+	transactionId: String!
+	title: String!
+	amount: String!
+	transactionDate: String!
+	datail: TransactionDetail!
+	user: User!
+}
+
+type TransactionDetail {
+	id: ID!
+	transactionDetailId: String!
+	needs: String!
+	wants: String!
+	invest: String!
+	description: String!
+	status: TransactionStatus!
+}
+
+enum TransactionStatus {
+	INCOME,
+	OUTCOME,
+	WATITING
+}
+
+type User {
+  id: ID!
+	userId: String!
+	firstName: String!
+	lastName: String!
+	username: String!
+	password: String!
+	email: String!
+	isDisabled: Boolean!
+	isVerified: Boolean!
+}
+
+type Query {
+	transaction(transactionId: String!): Transaction!
+	transactions: [Transaction!]!
+}
+
+input RegisterUser {
+	firstName: String!
+	lastName: String!
+	username: String!
+	password: String!
+	email: String!
+}
+
+input Login {
+	username: String!
+	password: String!
+}
+
+input CreateTransaction {
+	title: String!
+	amount: String!
+	transactionDate: String!
+	description: String
+	transactionStatus: String!
+	transactionType: String
+}
+
+type Mutation {
+	login(username: String!, password: String!): User!
+	register(input: RegisterUser!): User!
+	createTransaction(input: CreateTransaction!): Transaction!
+}
