@@ -9,37 +9,52 @@ import (
 
 	"github.com/seagalputra/cashlog/graph/generated"
 	"github.com/seagalputra/cashlog/graph/model"
-	"github.com/seagalputra/cashlog/internal/user"
 )
 
 func (r *mutationResolver) Login(ctx context.Context, username string, password string) (*model.User, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 
-func (r *mutationResolver) Register(ctx context.Context, input model.RegisterUser) (*model.RegisterPayload, error) {
-	request := user.RegisterRequest{
-		FirstName: input.FirstName,
-		LastName:  input.LastName,
-		Username:  input.Username,
-		Password:  input.Password,
-		Email:     input.Email,
+func (r *mutationResolver) Register(ctx context.Context, newUser model.RegisterUser) (*model.AuthPayload, error) {
+	request := model.RegisterUser{
+		FirstName: newUser.FirstName,
+		LastName:  newUser.LastName,
+		Username:  newUser.Username,
+		Password:  newUser.Password,
+		Email:     newUser.Email,
 	}
 
-	account, err := r.UserService.RegisterAccount(request)
+	_, err := r.UserService.RegisterAccount(request)
 	if err != nil {
-		return &model.RegisterPayload{}, err
+		return &model.AuthPayload{}, err
 	}
 
-	return &model.RegisterPayload{
-		FirstName: account.FirstName,
-		LastName:  account.LastName,
-		Username:  account.Username,
-		Email:     account.Email,
-	}, nil
+	return &model.AuthPayload{}, nil
 }
 
-func (r *mutationResolver) CreateTransaction(ctx context.Context, input model.CreateTransaction) (*model.Transaction, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *mutationResolver) CreateTransaction(ctx context.Context, newTransaction model.CreateTransaction) (*model.Transaction, error) {
+	var err error
+
+	switch newTransaction.Status {
+	case model.TransactionStatusIncome:
+		err = r.TransactionService.CreateIncome(newTransaction)
+	case model.TransactionStatusOutcome:
+		err = r.TransactionService.CreateOutcome(newTransaction)
+	case model.TransactionStatusWaiting:
+		err = r.TransactionService.CreateWaiting(newTransaction)
+	}
+
+	if err != nil {
+		return &model.Transaction{}, err
+	}
+
+	return &model.Transaction{
+		Title:           newTransaction.Title,
+		Amount:          newTransaction.Amount,
+		TransactionDate: newTransaction.TransactionDate,
+		Detail:          &model.TransactionDetail{},
+		User:            &model.User{},
+	}, nil
 }
 
 func (r *queryResolver) Transaction(ctx context.Context, transactionID string) (*model.Transaction, error) {

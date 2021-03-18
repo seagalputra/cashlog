@@ -2,6 +2,7 @@ package user
 
 import (
 	"errors"
+	"github.com/seagalputra/cashlog/graph/model"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -13,7 +14,7 @@ func TestUserServiceImpl_RegisterAccount(t *testing.T) {
 
 	userAccountService := &ServiceImpl{repo}
 
-	userRequest := RegisterRequest{
+	userRequest := model.RegisterUser{
 		FirstName: "Dwiferdio Seagal",
 		LastName:  "Putra",
 		Username:  "test1234",
@@ -21,8 +22,8 @@ func TestUserServiceImpl_RegisterAccount(t *testing.T) {
 		Email:     "testing1234@email.com",
 	}
 
-	repo.On("FindByUsername", mock.Anything).Return(&User{}, errors.New("No result set"))
-	repo.On("Save", mock.MatchedBy(func(req *User) bool {
+	repo.On("FindByUsername", mock.Anything).Return(&model.User{}, errors.New("No result set"))
+	repo.On("Save", mock.MatchedBy(func(req *model.User) bool {
 		assert.Equal(t, userRequest.Email, req.Email)
 		assert.Equal(t, userRequest.FirstName, req.FirstName)
 		assert.Equal(t, userRequest.LastName, req.LastName)
@@ -43,13 +44,13 @@ func TestUserServiceImpl_AuthenticateUser(t *testing.T) {
 
 	userAccountService := &ServiceImpl{repo}
 
-	authenticeRequest := AuthenticateRequest{
+	authenticeRequest := model.Login{
 		Username: "test1234",
 		Password: "12345",
 	}
 
-	savedAccount := &User{
-		ID:         1,
+	savedAccount := &model.User{
+		ID:         "1",
 		UserID:     "some user id",
 		FirstName:  "Dwiferdio Seagal",
 		LastName:   "Putra",

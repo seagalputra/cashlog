@@ -3,6 +3,7 @@ package user
 import (
 	"errors"
 	"fmt"
+	"github.com/seagalputra/cashlog/graph/model"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -12,8 +13,8 @@ import (
 
 // Service interface definition for dealing with business logic related with user.
 type Service interface {
-	RegisterAccount(request RegisterRequest) (*RegisterResponse, error)
-	Authenticate(request AuthenticateRequest) (*AuthenticateResponse, error)
+	RegisterAccount(request model.RegisterUser) (*model.AuthPayload, error)
+	Authenticate(request model.Login) (*model.AuthPayload, error)
 }
 
 // ServiceImpl is implementation details for dealing with business logic related with user.
@@ -22,7 +23,7 @@ type ServiceImpl struct {
 }
 
 // Authenticate is function for authentice user account.
-func (u *ServiceImpl) Authenticate(request AuthenticateRequest) (*AuthenticateResponse, error) {
+func (u *ServiceImpl) Authenticate(request model.Login) (*model.AuthPayload, error) {
 	userAccount, err := u.UserRepo.FindByUsername(request.Username)
 	if err != nil {
 		return nil, fmt.Errorf("User.Authenticate : %v", err)
@@ -38,12 +39,12 @@ func (u *ServiceImpl) Authenticate(request AuthenticateRequest) (*AuthenticateRe
 		return nil, fmt.Errorf("User.Authenticate : %v", err)
 	}
 
-	response := &AuthenticateResponse{Token: token}
+	response := &model.AuthPayload{Token: token}
 
 	return response, nil
 }
 
-func (u *ServiceImpl) createToken(userID int64) (string, error) {
+func (u *ServiceImpl) createToken(userID string) (string, error) {
 	// TODO: Change this secret key with key from environment variable
 	secret := "asdfghjkl"
 	claims := jwt.MapClaims{}
@@ -61,7 +62,7 @@ func (u *ServiceImpl) createToken(userID int64) (string, error) {
 }
 
 // RegisterAccount is function for registering given account
-func (u *ServiceImpl) RegisterAccount(request RegisterRequest) (*RegisterResponse, error) {
+func (u *ServiceImpl) RegisterAccount(request model.RegisterUser) (*model.AuthPayload, error) {
 	userID := uuid.NewV4().String()
 
 	_, err := u.UserRepo.FindByUsername(request.Username)
@@ -74,7 +75,7 @@ func (u *ServiceImpl) RegisterAccount(request RegisterRequest) (*RegisterRespons
 		return nil, fmt.Errorf("User.RegisterAccount : %v", err)
 	}
 
-	account := &User{
+	account := &model.User{
 		UserID:     userID,
 		FirstName:  request.FirstName,
 		LastName:   request.LastName,
@@ -89,11 +90,5 @@ func (u *ServiceImpl) RegisterAccount(request RegisterRequest) (*RegisterRespons
 		return nil, fmt.Errorf("User.RegisterAccount : %v", err)
 	}
 
-	return &RegisterResponse{
-		UserAccountID: userID,
-		FirstName:     request.FirstName,
-		LastName:      request.LastName,
-		Username:      request.Username,
-		Email:         request.Email,
-	}, nil
+	return &model.AuthPayload{}, nil
 }

@@ -43,10 +43,15 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	AuthPayload struct {
+		RefreshToken func(childComplexity int) int
+		Token        func(childComplexity int) int
+	}
+
 	Mutation struct {
-		CreateTransaction func(childComplexity int, input model.CreateTransaction) int
+		CreateTransaction func(childComplexity int, newTransaction model.CreateTransaction) int
 		Login             func(childComplexity int, username string, password string) int
-		Register          func(childComplexity int, input model.RegisterUser) int
+		Register          func(childComplexity int, newUser model.RegisterUser) int
 	}
 
 	Query struct {
@@ -54,16 +59,9 @@ type ComplexityRoot struct {
 		Transactions func(childComplexity int) int
 	}
 
-	RegisterPayload struct {
-		Email     func(childComplexity int) int
-		FirstName func(childComplexity int) int
-		LastName  func(childComplexity int) int
-		Username  func(childComplexity int) int
-	}
-
 	Transaction struct {
 		Amount          func(childComplexity int) int
-		Datail          func(childComplexity int) int
+		Detail          func(childComplexity int) int
 		ID              func(childComplexity int) int
 		Title           func(childComplexity int) int
 		TransactionDate func(childComplexity int) int
@@ -96,8 +94,8 @@ type ComplexityRoot struct {
 
 type MutationResolver interface {
 	Login(ctx context.Context, username string, password string) (*model.User, error)
-	Register(ctx context.Context, input model.RegisterUser) (*model.RegisterPayload, error)
-	CreateTransaction(ctx context.Context, input model.CreateTransaction) (*model.Transaction, error)
+	Register(ctx context.Context, newUser model.RegisterUser) (*model.AuthPayload, error)
+	CreateTransaction(ctx context.Context, newTransaction model.CreateTransaction) (*model.Transaction, error)
 }
 type QueryResolver interface {
 	Transaction(ctx context.Context, transactionID string) (*model.Transaction, error)
@@ -119,6 +117,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	_ = ec
 	switch typeName + "." + field {
 
+	case "AuthPayload.refreshToken":
+		if e.complexity.AuthPayload.RefreshToken == nil {
+			break
+		}
+
+		return e.complexity.AuthPayload.RefreshToken(childComplexity), true
+
+	case "AuthPayload.token":
+		if e.complexity.AuthPayload.Token == nil {
+			break
+		}
+
+		return e.complexity.AuthPayload.Token(childComplexity), true
+
 	case "Mutation.createTransaction":
 		if e.complexity.Mutation.CreateTransaction == nil {
 			break
@@ -129,7 +141,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateTransaction(childComplexity, args["input"].(model.CreateTransaction)), true
+		return e.complexity.Mutation.CreateTransaction(childComplexity, args["newTransaction"].(model.CreateTransaction)), true
 
 	case "Mutation.login":
 		if e.complexity.Mutation.Login == nil {
@@ -153,7 +165,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.Register(childComplexity, args["input"].(model.RegisterUser)), true
+		return e.complexity.Mutation.Register(childComplexity, args["newUser"].(model.RegisterUser)), true
 
 	case "Query.transaction":
 		if e.complexity.Query.Transaction == nil {
@@ -174,34 +186,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Transactions(childComplexity), true
 
-	case "RegisterPayload.email":
-		if e.complexity.RegisterPayload.Email == nil {
-			break
-		}
-
-		return e.complexity.RegisterPayload.Email(childComplexity), true
-
-	case "RegisterPayload.firstName":
-		if e.complexity.RegisterPayload.FirstName == nil {
-			break
-		}
-
-		return e.complexity.RegisterPayload.FirstName(childComplexity), true
-
-	case "RegisterPayload.lastName":
-		if e.complexity.RegisterPayload.LastName == nil {
-			break
-		}
-
-		return e.complexity.RegisterPayload.LastName(childComplexity), true
-
-	case "RegisterPayload.username":
-		if e.complexity.RegisterPayload.Username == nil {
-			break
-		}
-
-		return e.complexity.RegisterPayload.Username(childComplexity), true
-
 	case "Transaction.amount":
 		if e.complexity.Transaction.Amount == nil {
 			break
@@ -209,12 +193,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Transaction.Amount(childComplexity), true
 
-	case "Transaction.datail":
-		if e.complexity.Transaction.Datail == nil {
+	case "Transaction.detail":
+		if e.complexity.Transaction.Detail == nil {
 			break
 		}
 
-		return e.complexity.Transaction.Datail(childComplexity), true
+		return e.complexity.Transaction.Detail(childComplexity), true
 
 	case "Transaction.id":
 		if e.complexity.Transaction.ID == nil {
@@ -433,7 +417,7 @@ var sources = []*ast.Source{
 	title: String!
 	amount: String!
 	transactionDate: String!
-	datail: TransactionDetail!
+	detail: TransactionDetail!
 	user: User!
 }
 
@@ -443,18 +427,18 @@ type TransactionDetail {
 	needs: String!
 	wants: String!
 	invest: String!
-	description: String!
+	description: String
 	status: TransactionStatus!
 }
 
 enum TransactionStatus {
-	INCOME,
-	OUTCOME,
-	WATITING
+	INCOME
+	OUTCOME
+	WAITING
 }
 
 type User {
-  id: ID!
+	id: ID!
 	userId: String!
 	firstName: String!
 	lastName: String!
@@ -488,21 +472,19 @@ input CreateTransaction {
 	amount: String!
 	transactionDate: String!
 	description: String
-	transactionStatus: String!
-	transactionType: String
+	status: TransactionStatus!
+	type: String
 }
 
-type RegisterPayload {
-	firstName: String!
-	lastName: String!
-	username: String!
-	email: String!
+type AuthPayload {
+	token: String!
+	refreshToken: String!
 }
 
 type Mutation {
 	login(username: String!, password: String!): User!
-	register(input: RegisterUser!): RegisterPayload!
-	createTransaction(input: CreateTransaction!): Transaction!
+	register(newUser: RegisterUser!): AuthPayload!
+	createTransaction(newTransaction: CreateTransaction!): Transaction!
 }
 `, BuiltIn: false},
 }
@@ -516,14 +498,14 @@ func (ec *executionContext) field_Mutation_createTransaction_args(ctx context.Co
 	var err error
 	args := map[string]interface{}{}
 	var arg0 model.CreateTransaction
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["newTransaction"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("newTransaction"))
 		arg0, err = ec.unmarshalNCreateTransaction2githubᚗcomᚋseagalputraᚋcashlogᚋgraphᚋmodelᚐCreateTransaction(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["input"] = arg0
+	args["newTransaction"] = arg0
 	return args, nil
 }
 
@@ -555,14 +537,14 @@ func (ec *executionContext) field_Mutation_register_args(ctx context.Context, ra
 	var err error
 	args := map[string]interface{}{}
 	var arg0 model.RegisterUser
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["newUser"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("newUser"))
 		arg0, err = ec.unmarshalNRegisterUser2githubᚗcomᚋseagalputraᚋcashlogᚋgraphᚋmodelᚐRegisterUser(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["input"] = arg0
+	args["newUser"] = arg0
 	return args, nil
 }
 
@@ -634,6 +616,76 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 
 // region    **************************** field.gotpl *****************************
 
+func (ec *executionContext) _AuthPayload_token(ctx context.Context, field graphql.CollectedField, obj *model.AuthPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "AuthPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Token, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _AuthPayload_refreshToken(ctx context.Context, field graphql.CollectedField, obj *model.AuthPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "AuthPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RefreshToken, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Mutation_login(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -701,7 +753,7 @@ func (ec *executionContext) _Mutation_register(ctx context.Context, field graphq
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().Register(rctx, args["input"].(model.RegisterUser))
+		return ec.resolvers.Mutation().Register(rctx, args["newUser"].(model.RegisterUser))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -713,9 +765,9 @@ func (ec *executionContext) _Mutation_register(ctx context.Context, field graphq
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.RegisterPayload)
+	res := resTmp.(*model.AuthPayload)
 	fc.Result = res
-	return ec.marshalNRegisterPayload2ᚖgithubᚗcomᚋseagalputraᚋcashlogᚋgraphᚋmodelᚐRegisterPayload(ctx, field.Selections, res)
+	return ec.marshalNAuthPayload2ᚖgithubᚗcomᚋseagalputraᚋcashlogᚋgraphᚋmodelᚐAuthPayload(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_createTransaction(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -743,7 +795,7 @@ func (ec *executionContext) _Mutation_createTransaction(ctx context.Context, fie
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateTransaction(rctx, args["input"].(model.CreateTransaction))
+		return ec.resolvers.Mutation().CreateTransaction(rctx, args["newTransaction"].(model.CreateTransaction))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -906,146 +958,6 @@ func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.C
 	res := resTmp.(*introspection.Schema)
 	fc.Result = res
 	return ec.marshalO__Schema2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _RegisterPayload_firstName(ctx context.Context, field graphql.CollectedField, obj *model.RegisterPayload) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "RegisterPayload",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.FirstName, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _RegisterPayload_lastName(ctx context.Context, field graphql.CollectedField, obj *model.RegisterPayload) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "RegisterPayload",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.LastName, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _RegisterPayload_username(ctx context.Context, field graphql.CollectedField, obj *model.RegisterPayload) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "RegisterPayload",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Username, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _RegisterPayload_email(ctx context.Context, field graphql.CollectedField, obj *model.RegisterPayload) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "RegisterPayload",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Email, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Transaction_id(ctx context.Context, field graphql.CollectedField, obj *model.Transaction) (ret graphql.Marshaler) {
@@ -1223,7 +1135,7 @@ func (ec *executionContext) _Transaction_transactionDate(ctx context.Context, fi
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Transaction_datail(ctx context.Context, field graphql.CollectedField, obj *model.Transaction) (ret graphql.Marshaler) {
+func (ec *executionContext) _Transaction_detail(ctx context.Context, field graphql.CollectedField, obj *model.Transaction) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1241,7 +1153,7 @@ func (ec *executionContext) _Transaction_datail(ctx context.Context, field graph
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Datail, nil
+		return obj.Detail, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1493,14 +1405,11 @@ func (ec *executionContext) _TransactionDetail_description(ctx context.Context, 
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*string)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _TransactionDetail_status(ctx context.Context, field graphql.CollectedField, obj *model.TransactionDetail) (ret graphql.Marshaler) {
@@ -2978,19 +2887,19 @@ func (ec *executionContext) unmarshalInputCreateTransaction(ctx context.Context,
 			if err != nil {
 				return it, err
 			}
-		case "transactionStatus":
+		case "status":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("transactionStatus"))
-			it.TransactionStatus, err = ec.unmarshalNString2string(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("status"))
+			it.Status, err = ec.unmarshalNTransactionStatus2githubᚗcomᚋseagalputraᚋcashlogᚋgraphᚋmodelᚐTransactionStatus(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "transactionType":
+		case "type":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("transactionType"))
-			it.TransactionType, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("type"))
+			it.Type, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3087,6 +2996,38 @@ func (ec *executionContext) unmarshalInputRegisterUser(ctx context.Context, obj 
 // endregion ************************** interface.gotpl ***************************
 
 // region    **************************** object.gotpl ****************************
+
+var authPayloadImplementors = []string{"AuthPayload"}
+
+func (ec *executionContext) _AuthPayload(ctx context.Context, sel ast.SelectionSet, obj *model.AuthPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, authPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("AuthPayload")
+		case "token":
+			out.Values[i] = ec._AuthPayload_token(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "refreshToken":
+			out.Values[i] = ec._AuthPayload_refreshToken(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
 
 var mutationImplementors = []string{"Mutation"}
 
@@ -3187,48 +3128,6 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 	return out
 }
 
-var registerPayloadImplementors = []string{"RegisterPayload"}
-
-func (ec *executionContext) _RegisterPayload(ctx context.Context, sel ast.SelectionSet, obj *model.RegisterPayload) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, registerPayloadImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("RegisterPayload")
-		case "firstName":
-			out.Values[i] = ec._RegisterPayload_firstName(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "lastName":
-			out.Values[i] = ec._RegisterPayload_lastName(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "username":
-			out.Values[i] = ec._RegisterPayload_username(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "email":
-			out.Values[i] = ec._RegisterPayload_email(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
 var transactionImplementors = []string{"Transaction"}
 
 func (ec *executionContext) _Transaction(ctx context.Context, sel ast.SelectionSet, obj *model.Transaction) graphql.Marshaler {
@@ -3265,8 +3164,8 @@ func (ec *executionContext) _Transaction(ctx context.Context, sel ast.SelectionS
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "datail":
-			out.Values[i] = ec._Transaction_datail(ctx, field, obj)
+		case "detail":
+			out.Values[i] = ec._Transaction_detail(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -3324,9 +3223,6 @@ func (ec *executionContext) _TransactionDetail(ctx context.Context, sel ast.Sele
 			}
 		case "description":
 			out.Values[i] = ec._TransactionDetail_description(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		case "status":
 			out.Values[i] = ec._TransactionDetail_status(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -3655,6 +3551,20 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 // region    ***************************** type.gotpl *****************************
 
+func (ec *executionContext) marshalNAuthPayload2githubᚗcomᚋseagalputraᚋcashlogᚋgraphᚋmodelᚐAuthPayload(ctx context.Context, sel ast.SelectionSet, v model.AuthPayload) graphql.Marshaler {
+	return ec._AuthPayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNAuthPayload2ᚖgithubᚗcomᚋseagalputraᚋcashlogᚋgraphᚋmodelᚐAuthPayload(ctx context.Context, sel ast.SelectionSet, v *model.AuthPayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._AuthPayload(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNBoolean2bool(ctx context.Context, v interface{}) (bool, error) {
 	res, err := graphql.UnmarshalBoolean(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -3688,20 +3598,6 @@ func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.Selec
 		}
 	}
 	return res
-}
-
-func (ec *executionContext) marshalNRegisterPayload2githubᚗcomᚋseagalputraᚋcashlogᚋgraphᚋmodelᚐRegisterPayload(ctx context.Context, sel ast.SelectionSet, v model.RegisterPayload) graphql.Marshaler {
-	return ec._RegisterPayload(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNRegisterPayload2ᚖgithubᚗcomᚋseagalputraᚋcashlogᚋgraphᚋmodelᚐRegisterPayload(ctx context.Context, sel ast.SelectionSet, v *model.RegisterPayload) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	return ec._RegisterPayload(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNRegisterUser2githubᚗcomᚋseagalputraᚋcashlogᚋgraphᚋmodelᚐRegisterUser(ctx context.Context, v interface{}) (model.RegisterUser, error) {

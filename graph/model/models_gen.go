@@ -8,25 +8,23 @@ import (
 	"strconv"
 )
 
+type AuthPayload struct {
+	Token        string `json:"token"`
+	RefreshToken string `json:"refreshToken"`
+}
+
 type CreateTransaction struct {
-	Title             string  `json:"title"`
-	Amount            string  `json:"amount"`
-	TransactionDate   string  `json:"transactionDate"`
-	Description       *string `json:"description"`
-	TransactionStatus string  `json:"transactionStatus"`
-	TransactionType   *string `json:"transactionType"`
+	Title           string            `json:"title"`
+	Amount          string            `json:"amount"`
+	TransactionDate string            `json:"transactionDate"`
+	Description     *string           `json:"description"`
+	Status          TransactionStatus `json:"status"`
+	Type            *string           `json:"type"`
 }
 
 type Login struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
-}
-
-type RegisterPayload struct {
-	FirstName string `json:"firstName"`
-	LastName  string `json:"lastName"`
-	Username  string `json:"username"`
-	Email     string `json:"email"`
 }
 
 type RegisterUser struct {
@@ -43,7 +41,7 @@ type Transaction struct {
 	Title           string             `json:"title"`
 	Amount          string             `json:"amount"`
 	TransactionDate string             `json:"transactionDate"`
-	Datail          *TransactionDetail `json:"datail"`
+	Detail          *TransactionDetail `json:"detail"`
 	User            *User              `json:"user"`
 }
 
@@ -53,7 +51,7 @@ type TransactionDetail struct {
 	Needs               string            `json:"needs"`
 	Wants               string            `json:"wants"`
 	Invest              string            `json:"invest"`
-	Description         string            `json:"description"`
+	Description         *string           `json:"description"`
 	Status              TransactionStatus `json:"status"`
 }
 
@@ -72,20 +70,20 @@ type User struct {
 type TransactionStatus string
 
 const (
-	TransactionStatusIncome   TransactionStatus = "INCOME"
-	TransactionStatusOutcome  TransactionStatus = "OUTCOME"
-	TransactionStatusWatiting TransactionStatus = "WATITING"
+	TransactionStatusIncome  TransactionStatus = "INCOME"
+	TransactionStatusOutcome TransactionStatus = "OUTCOME"
+	TransactionStatusWaiting TransactionStatus = "WAITING"
 )
 
 var AllTransactionStatus = []TransactionStatus{
 	TransactionStatusIncome,
 	TransactionStatusOutcome,
-	TransactionStatusWatiting,
+	TransactionStatusWaiting,
 }
 
 func (e TransactionStatus) IsValid() bool {
 	switch e {
-	case TransactionStatusIncome, TransactionStatusOutcome, TransactionStatusWatiting:
+	case TransactionStatusIncome, TransactionStatusOutcome, TransactionStatusWaiting:
 		return true
 	}
 	return false

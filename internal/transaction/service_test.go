@@ -1,13 +1,12 @@
 package transaction
 
 import (
-	"testing"
-	"time"
-
 	uuid "github.com/satori/go.uuid"
+	"github.com/seagalputra/cashlog/graph/model"
 	"github.com/seagalputra/cashlog/internal/user"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"testing"
 )
 
 func TestTransactionServiceImpl_CreateOutcomeNeeds(t *testing.T) {
@@ -16,17 +15,18 @@ func TestTransactionServiceImpl_CreateOutcomeNeeds(t *testing.T) {
 
 	transactionService := &ServiceImpl{transactionRepository, userAccountRepository}
 
-	request := CreateOutcomeRequest{
-		UserID:          1,
+	desc := "A some description"
+	trxType := "needs"
+	request := model.CreateTransaction{
 		Title:           "Lunch",
 		Amount:          "-15000.00",
-		TransactionDate: time.Now(),
-		Description:     "A some description",
-		TransactionType: "needs",
+		TransactionDate: "2020-11-01",
+		Description:     &desc,
+		Type:            &trxType,
 	}
 
-	savedAccount := &user.User{
-		ID:         1,
+	savedAccount := &model.User{
+		ID:         "1",
 		UserID:     uuid.NewV4().String(),
 		FirstName:  "Dwiferdio Seagal",
 		LastName:   "Putra",
@@ -37,20 +37,29 @@ func TestTransactionServiceImpl_CreateOutcomeNeeds(t *testing.T) {
 		IsVerified: false,
 	}
 
-	savedDetail := &Detail{
-		ID:                  1,
+	savedDetail := &model.TransactionDetail{
+		ID:                  "1",
 		TransactionDetailID: uuid.NewV4().String(),
 		Needs:               "-15000.00",
 		Wants:               "0.00",
 		Invest:              "0.00",
-		Description:         "A some description",
+		Description:         &desc,
 		Status:              "outcome",
+	}
+
+	savedTrx := &model.Transaction{
+		ID:              "1",
+		TransactionID:   uuid.NewV4().String(),
+		Title:           "Lunch",
+		Amount:          "-15000.00",
+		TransactionDate: "2020-11-01",
+		Detail:          savedDetail,
+		User:            savedAccount,
 	}
 
 	userAccountRepository.On("FindByID", mock.Anything).Return(savedAccount, nil)
 	transactionRepository.On("SaveDetail", mock.Anything).Return(savedDetail, nil)
-	transactionRepository.On("Save", mock.MatchedBy(func(req Transaction) bool {
-		assert.Equal(t, request.UserID, req.User.ID)
+	transactionRepository.On("Save", mock.MatchedBy(func(req model.Transaction) bool {
 		assert.Equal(t, request.Title, req.Title)
 		assert.Equal(t, request.Amount, req.Amount)
 		assert.Equal(t, request.Description, req.Detail.Description)
@@ -58,7 +67,7 @@ func TestTransactionServiceImpl_CreateOutcomeNeeds(t *testing.T) {
 		assert.Equal(t, "0.00", req.Detail.Wants)
 		assert.Equal(t, "0.00", req.Detail.Invest)
 		return true
-	})).Return(nil)
+	})).Return(savedTrx)
 
 	err := transactionService.CreateOutcome(request)
 	assert.NoError(t, err)
@@ -74,17 +83,18 @@ func TestTransactionServiceImpl_CreateOutcomeWants(t *testing.T) {
 
 	transactionService := &ServiceImpl{transactionRepository, userAccountRepository}
 
-	request := CreateOutcomeRequest{
-		UserID:          1,
+	desc := "A some description"
+	trxType := "wants"
+	request := model.CreateTransaction{
 		Title:           "Snack",
 		Amount:          "-25000.00",
-		TransactionDate: time.Now(),
-		Description:     "A some description",
-		TransactionType: "wants",
+		TransactionDate: "2020-11-01",
+		Description:     &desc,
+		Type:            &trxType,
 	}
 
-	savedAccount := &user.User{
-		ID:         1,
+	savedAccount := &model.User{
+		ID:         "1",
 		UserID:     uuid.NewV4().String(),
 		FirstName:  "Dwiferdio Seagal",
 		LastName:   "Putra",
@@ -95,20 +105,29 @@ func TestTransactionServiceImpl_CreateOutcomeWants(t *testing.T) {
 		IsVerified: false,
 	}
 
-	savedDetail := &Detail{
-		ID:                  1,
+	savedDetail := &model.TransactionDetail{
+		ID:                  "1",
 		TransactionDetailID: uuid.NewV4().String(),
 		Needs:               "0.00",
 		Wants:               "-25000.00",
 		Invest:              "0.00",
-		Description:         "A some description",
+		Description:         &desc,
 		Status:              "outcome",
+	}
+
+	savedTrx := &model.Transaction{
+		ID:              "1",
+		TransactionID:   uuid.NewV4().String(),
+		Title:           "Snack",
+		Amount:          "-25000.00",
+		TransactionDate: "2020-11-01",
+		Detail:          savedDetail,
+		User:            savedAccount,
 	}
 
 	userAccountRepository.On("FindByID", mock.Anything).Return(savedAccount, nil)
 	transactionRepository.On("SaveDetail", mock.Anything).Return(savedDetail, nil)
-	transactionRepository.On("Save", mock.MatchedBy(func(req Transaction) bool {
-		assert.Equal(t, request.UserID, req.User.ID)
+	transactionRepository.On("Save", mock.MatchedBy(func(req model.Transaction) bool {
 		assert.Equal(t, request.Title, req.Title)
 		assert.Equal(t, request.Amount, req.Amount)
 		assert.Equal(t, request.Description, req.Detail.Description)
@@ -116,7 +135,7 @@ func TestTransactionServiceImpl_CreateOutcomeWants(t *testing.T) {
 		assert.Equal(t, "0.00", req.Detail.Needs)
 		assert.Equal(t, "0.00", req.Detail.Invest)
 		return true
-	})).Return(nil)
+	})).Return(savedTrx)
 
 	err := transactionService.CreateOutcome(request)
 	assert.NoError(t, err)
@@ -132,15 +151,16 @@ func TestTransactionServiceImpl_CreateIncome(t *testing.T) {
 
 	transactionService := &ServiceImpl{transactionRepository, userAccountRepository}
 
-	request := &CreateIncomeRequest{
+	desc := "Monthly salary income"
+	request := &model.CreateTransaction{
 		Title:           "Salary",
 		Amount:          "3000000.00",
-		TransactionDate: time.Now(),
-		Description:     "Monthly salary income",
+		TransactionDate: "2020-11-01",
+		Description:     &desc,
 	}
 
-	savedAccount := &user.User{
-		ID:         1,
+	savedAccount := &model.User{
+		ID:         "1",
 		UserID:     uuid.NewV4().String(),
 		FirstName:  "Dwiferdio Seagal",
 		LastName:   "Putra",
@@ -151,29 +171,39 @@ func TestTransactionServiceImpl_CreateIncome(t *testing.T) {
 		IsVerified: false,
 	}
 
-	savedDetail := &Detail{
-		ID:                  1,
+	savedDetail := &model.TransactionDetail{
+		ID:                  "1",
 		TransactionDetailID: uuid.NewV4().String(),
 		Needs:               "1500000.00",
 		Wants:               "1200000.00",
 		Invest:              "300000.00",
-		Description:         "Monthly salary income",
+		Description:         &desc,
 		Status:              "income",
 	}
 
+	savedTrx := &model.Transaction{
+		ID:              "1",
+		TransactionID:   uuid.NewV4().String(),
+		Title:           "Salary",
+		Amount:          "3000000.00",
+		TransactionDate: "2020-11-01",
+		Detail:          savedDetail,
+		User:            savedAccount,
+	}
+
 	userAccountRepository.On("FindByID", mock.Anything).Return(savedAccount, nil)
-	transactionRepository.On("SaveDetail", mock.MatchedBy(func(req Detail) bool {
+	transactionRepository.On("SaveDetail", mock.MatchedBy(func(req model.TransactionDetail) bool {
 		assert.Equal(t, "1500000.00", req.Needs)
 		assert.Equal(t, "1200000.00", req.Wants)
 		assert.Equal(t, "300000.00", req.Invest)
 		return true
 	})).Return(savedDetail, nil)
-	transactionRepository.On("Save", mock.MatchedBy(func(req Transaction) bool {
+	transactionRepository.On("Save", mock.MatchedBy(func(req model.Transaction) bool {
 		assert.Equal(t, request.Title, req.Title)
 		assert.Equal(t, request.Amount, req.Amount)
 		assert.Equal(t, request.Description, req.Detail.Description)
 		return true
-	})).Return(nil)
+	})).Return(savedTrx)
 
 	err := transactionService.CreateIncome(*request)
 

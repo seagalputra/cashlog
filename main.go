@@ -1,16 +1,16 @@
 package main
 
 import (
+	"log"
+	"net/http"
+	"os"
+
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
-	"github.com/seagalputra/cashlog/internal/auth"
 	"github.com/seagalputra/cashlog/internal/pkg/config"
 	"github.com/seagalputra/cashlog/internal/pkg/db"
 	"github.com/seagalputra/cashlog/internal/transaction"
 	"github.com/seagalputra/cashlog/internal/user"
-	"log"
-	"net/http"
-	"os"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
@@ -34,7 +34,7 @@ func main() {
 
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
-	router.Use(auth.Middleware())
+	// router.Use(auth.Middleware())
 
 	port := config.Get("PORT")
 	if port == "" {
@@ -46,7 +46,7 @@ func main() {
 	transactionRepo := &transaction.RepositoryImpl{DB: conn}
 	transactionService := &transaction.ServiceImpl{TransactionRepository: transactionRepo, UserRepository: userRepo}
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{
-		UserService: userService,
+		UserService:        userService,
 		TransactionService: transactionService,
 	}}))
 

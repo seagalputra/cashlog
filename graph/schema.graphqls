@@ -4,7 +4,7 @@ type Transaction {
 	title: String!
 	amount: String!
 	transactionDate: String!
-	datail: TransactionDetail!
+	detail: TransactionDetail!
 	user: User!
 }
 
@@ -14,18 +14,18 @@ type TransactionDetail {
 	needs: String!
 	wants: String!
 	invest: String!
-	description: String!
+	description: String
 	status: TransactionStatus!
 }
 
 enum TransactionStatus {
-	INCOME,
-	OUTCOME,
-	WATITING
+	INCOME
+	OUTCOME
+	WAITING
 }
 
 type User {
-  id: ID!
+	id: ID!
 	userId: String!
 	firstName: String!
 	lastName: String!
@@ -59,19 +59,17 @@ input CreateTransaction {
 	amount: String!
 	transactionDate: String!
 	description: String
-	transactionStatus: String!
-	transactionType: String
+	status: TransactionStatus!
+	type: String
 }
 
-type RegisterPayload {
-	firstName: String!
-	lastName: String!
-	username: String!
-	email: String!
+type AuthPayload {
+	token: String!
+	refreshToken: String!
 }
 
 type Mutation {
 	login(username: String!, password: String!): User!
-	register(input: RegisterUser!): RegisterPayload!
-	createTransaction(input: CreateTransaction!): Transaction!
+	register(newUser: RegisterUser!): AuthPayload!
+	createTransaction(newTransaction: CreateTransaction!): Transaction!
 }
