@@ -69,7 +69,7 @@ type AuthPayload {
 }
 
 type Mutation {
-	login(username: String!, password: String!): User!
+	login(username: String!, password: String!): AuthPayload!
 	register(newUser: RegisterUser!): AuthPayload!
 	createTransaction(newTransaction: CreateTransaction!): Transaction!
 }

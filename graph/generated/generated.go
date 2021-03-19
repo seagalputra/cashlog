@@ -93,7 +93,7 @@ type ComplexityRoot struct {
 }
 
 type MutationResolver interface {
-	Login(ctx context.Context, username string, password string) (*model.User, error)
+	Login(ctx context.Context, username string, password string) (*model.AuthPayload, error)
 	Register(ctx context.Context, newUser model.RegisterUser) (*model.AuthPayload, error)
 	CreateTransaction(ctx context.Context, newTransaction model.CreateTransaction) (*model.Transaction, error)
 }
@@ -482,7 +482,7 @@ type AuthPayload {
 }
 
 type Mutation {
-	login(username: String!, password: String!): User!
+	login(username: String!, password: String!): AuthPayload!
 	register(newUser: RegisterUser!): AuthPayload!
 	createTransaction(newTransaction: CreateTransaction!): Transaction!
 }
@@ -723,9 +723,9 @@ func (ec *executionContext) _Mutation_login(ctx context.Context, field graphql.C
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.User)
+	res := resTmp.(*model.AuthPayload)
 	fc.Result = res
-	return ec.marshalNUser2ᚖgithubᚗcomᚋseagalputraᚋcashlogᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+	return ec.marshalNAuthPayload2ᚖgithubᚗcomᚋseagalputraᚋcashlogᚋgraphᚋmodelᚐAuthPayload(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_register(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3689,10 +3689,6 @@ func (ec *executionContext) unmarshalNTransactionStatus2githubᚗcomᚋseagalput
 
 func (ec *executionContext) marshalNTransactionStatus2githubᚗcomᚋseagalputraᚋcashlogᚋgraphᚋmodelᚐTransactionStatus(ctx context.Context, sel ast.SelectionSet, v model.TransactionStatus) graphql.Marshaler {
 	return v
-}
-
-func (ec *executionContext) marshalNUser2githubᚗcomᚋseagalputraᚋcashlogᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v model.User) graphql.Marshaler {
-	return ec._User(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNUser2ᚖgithubᚗcomᚋseagalputraᚋcashlogᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v *model.User) graphql.Marshaler {

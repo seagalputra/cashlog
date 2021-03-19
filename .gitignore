@@ -10,7 +10,6 @@
 # Icon must end with two \r
 Icon
 
-
 # Thumbnails
 ._*
 
@@ -179,4 +178,20 @@ tags
 *.env
 .vscode
 
+# dependencies
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+/out/
+
+# production
+/build
+
+# misc
+*.pem
+
+# vercel
+.vercel
 # End of https://www.toptal.com/developers/gitignore/api/node,vim,macos,react0

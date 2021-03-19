@@ -11,7 +11,7 @@ import (
 	"github.com/seagalputra/cashlog/graph/model"
 )
 
-func (r *mutationResolver) Login(ctx context.Context, username string, password string) (*model.User, error) {
+func (r *mutationResolver) Login(ctx context.Context, username string, password string) (*model.AuthPayload, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 
