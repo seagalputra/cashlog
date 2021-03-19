@@ -16,15 +16,7 @@ func (r *mutationResolver) Login(ctx context.Context, username string, password 
 }
 
 func (r *mutationResolver) Register(ctx context.Context, newUser model.RegisterUser) (*model.AuthPayload, error) {
-	request := model.RegisterUser{
-		FirstName: newUser.FirstName,
-		LastName:  newUser.LastName,
-		Username:  newUser.Username,
-		Password:  newUser.Password,
-		Email:     newUser.Email,
-	}
-
-	_, err := r.UserService.RegisterAccount(request)
+	_, err := r.UserService.RegisterAccount(newUser)
 	if err != nil {
 		return &model.AuthPayload{}, err
 	}
@@ -35,26 +27,12 @@ func (r *mutationResolver) Register(ctx context.Context, newUser model.RegisterU
 func (r *mutationResolver) CreateTransaction(ctx context.Context, newTransaction model.CreateTransaction) (*model.Transaction, error) {
 	var err error
 
-	switch newTransaction.Status {
-	case model.TransactionStatusIncome:
-		err = r.TransactionService.CreateIncome(newTransaction)
-	case model.TransactionStatusOutcome:
-		err = r.TransactionService.CreateOutcome(newTransaction)
-	case model.TransactionStatusWaiting:
-		err = r.TransactionService.CreateWaiting(newTransaction)
-	}
-
+	transaction, err := r.TransactionService.CreateTransaction(newTransaction)
 	if err != nil {
 		return &model.Transaction{}, err
 	}
 
-	return &model.Transaction{
-		Title:           newTransaction.Title,
-		Amount:          newTransaction.Amount,
-		TransactionDate: newTransaction.TransactionDate,
-		Detail:          &model.TransactionDetail{},
-		User:            &model.User{},
-	}, nil
+	return transaction, nil
 }
 
 func (r *queryResolver) Transaction(ctx context.Context, transactionID string) (*model.Transaction, error) {

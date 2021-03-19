@@ -1,7 +1,6 @@
 package transaction
 
 import (
-	"context"
 	"database/sql"
 	"log"
 
@@ -53,48 +52,27 @@ func (t *RepositoryImpl) Save(transaction model.Transaction) *model.Transaction 
 		)
 		INSERT INTO transaction (transaction_id, title, amount, transaction_date, transaction_detail_id, user_account_id) VALUES ($7, $8, $9, $10, (SELECT id FROM trx_detail), $11) RETURNING *
 	`
-	tx, err := t.DB.BeginTx(context.Background(), &sql.TxOptions{})
-	stmt, err := tx.Prepare(query)
+	stmt, err := t.DB.Prepare(query)
 	if err != nil {
 		log.Print(err)
-		if err := tx.Rollback(); err != nil {
-			log.Print(err)
-			return nil
-		}
 		return nil
 	}
 	defer stmt.Close()
 
 	var trxDetailID string
+	trx.User = &model.User{}
 	row := stmt.QueryRow(transaction.Detail.TransactionDetailID, transaction.Detail.Needs, transaction.Detail.Wants, transaction.Detail.Invest, transaction.Detail.Description, transaction.Detail.Status, transaction.TransactionID, transaction.Title, transaction.Amount, transaction.TransactionDate, transaction.User.ID)
 	err = row.Scan(&trx.ID, &trx.TransactionID, &trx.Title, &trx.Amount, &trx.TransactionDate, &trxDetailID, &trx.User.ID)
 	if err != nil {
 		log.Print(err)
-		if err := tx.Rollback(); err != nil {
-			log.Print(err)
-			return nil
-		}
 		return nil
 	}
 	detail, err := t.getTransactionDetail(trxDetailID)
 	if err != nil {
 		log.Print(err)
-		if err := tx.Rollback(); err != nil {
-			log.Print(err)
-			return nil
-		}
 		return nil
 	}
 	trx.Detail = detail
-
-	if err := tx.Commit(); err != nil {
-		log.Print(err)
-		if err := tx.Rollback(); err != nil {
-			log.Print(err)
-			return nil
-		}
-		return nil
-	}
 
 	return trx
 }

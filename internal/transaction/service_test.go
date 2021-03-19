@@ -23,6 +23,7 @@ func TestTransactionServiceImpl_CreateOutcomeNeeds(t *testing.T) {
 		Amount:          "-15000.00",
 		TransactionDate: "2020-11-01",
 		Description:     &desc,
+		Status:          model.TransactionStatusOutcome,
 		Type:            &trxType,
 	}
 
@@ -69,8 +70,9 @@ func TestTransactionServiceImpl_CreateOutcomeNeeds(t *testing.T) {
 		return true
 	})).Return(savedTrx)
 
-	err := transactionService.CreateOutcome(request)
+	trx, err := transactionService.CreateTransaction(request)
 	assert.NoError(t, err)
+	assert.Equal(t, savedTrx, trx)
 
 	userAccountRepository.AssertNumberOfCalls(t, "FindByID", 1)
 	transactionRepository.AssertNumberOfCalls(t, "Save", 1)
@@ -89,6 +91,7 @@ func TestTransactionServiceImpl_CreateOutcomeWants(t *testing.T) {
 		Amount:          "-25000.00",
 		TransactionDate: "2020-11-01",
 		Description:     &desc,
+		Status:          model.TransactionStatusOutcome,
 		Type:            &trxType,
 	}
 
@@ -135,8 +138,9 @@ func TestTransactionServiceImpl_CreateOutcomeWants(t *testing.T) {
 		return true
 	})).Return(savedTrx)
 
-	err := transactionService.CreateOutcome(request)
+	trx, err := transactionService.CreateTransaction(request)
 	assert.NoError(t, err)
+	assert.Equal(t, savedTrx, trx)
 
 	userAccountRepository.AssertNumberOfCalls(t, "FindByID", 1)
 	transactionRepository.AssertNumberOfCalls(t, "Save", 1)
@@ -153,6 +157,7 @@ func TestTransactionServiceImpl_CreateIncome(t *testing.T) {
 		Title:           "Salary",
 		Amount:          "3000000.00",
 		TransactionDate: "2020-11-01",
+		Status:          model.TransactionStatusIncome,
 		Description:     &desc,
 	}
 
@@ -196,9 +201,10 @@ func TestTransactionServiceImpl_CreateIncome(t *testing.T) {
 		return true
 	})).Return(savedTrx)
 
-	err := transactionService.CreateIncome(*request)
+	trx, err := transactionService.CreateTransaction(*request)
 
 	assert.NoError(t, err)
+	assert.Equal(t, savedTrx, trx)
 
 	userAccountRepository.AssertNumberOfCalls(t, "FindByID", 1)
 	transactionRepository.AssertNumberOfCalls(t, "Save", 1)

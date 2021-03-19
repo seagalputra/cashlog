@@ -1,4 +1,4 @@
-CREATE TYPE transaction_status AS ENUM ('income', 'outcome', 'waiting');
+CREATE TYPE transaction_status AS ENUM ('INCOME', 'OUTCOME', 'WAITING');
 CREATE TABLE IF NOT EXISTS transaction_detail (
 	id BIGSERIAL PRIMARY KEY,
 	transaction_detail_id VARCHAR(100),
