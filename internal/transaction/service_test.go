@@ -1,12 +1,13 @@
 package transaction
 
 import (
+	"testing"
+
 	uuid "github.com/satori/go.uuid"
 	"github.com/seagalputra/cashlog/graph/model"
 	"github.com/seagalputra/cashlog/internal/user"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"testing"
 )
 
 func TestTransactionServiceImpl_CreateOutcomeNeeds(t *testing.T) {
@@ -58,7 +59,6 @@ func TestTransactionServiceImpl_CreateOutcomeNeeds(t *testing.T) {
 	}
 
 	userAccountRepository.On("FindByID", mock.Anything).Return(savedAccount, nil)
-	transactionRepository.On("SaveDetail", mock.Anything).Return(savedDetail, nil)
 	transactionRepository.On("Save", mock.MatchedBy(func(req model.Transaction) bool {
 		assert.Equal(t, request.Title, req.Title)
 		assert.Equal(t, request.Amount, req.Amount)
@@ -73,7 +73,6 @@ func TestTransactionServiceImpl_CreateOutcomeNeeds(t *testing.T) {
 	assert.NoError(t, err)
 
 	userAccountRepository.AssertNumberOfCalls(t, "FindByID", 1)
-	transactionRepository.AssertNumberOfCalls(t, "SaveDetail", 1)
 	transactionRepository.AssertNumberOfCalls(t, "Save", 1)
 }
 
@@ -126,7 +125,6 @@ func TestTransactionServiceImpl_CreateOutcomeWants(t *testing.T) {
 	}
 
 	userAccountRepository.On("FindByID", mock.Anything).Return(savedAccount, nil)
-	transactionRepository.On("SaveDetail", mock.Anything).Return(savedDetail, nil)
 	transactionRepository.On("Save", mock.MatchedBy(func(req model.Transaction) bool {
 		assert.Equal(t, request.Title, req.Title)
 		assert.Equal(t, request.Amount, req.Amount)
@@ -141,7 +139,6 @@ func TestTransactionServiceImpl_CreateOutcomeWants(t *testing.T) {
 	assert.NoError(t, err)
 
 	userAccountRepository.AssertNumberOfCalls(t, "FindByID", 1)
-	transactionRepository.AssertNumberOfCalls(t, "SaveDetail", 1)
 	transactionRepository.AssertNumberOfCalls(t, "Save", 1)
 }
 
@@ -192,12 +189,6 @@ func TestTransactionServiceImpl_CreateIncome(t *testing.T) {
 	}
 
 	userAccountRepository.On("FindByID", mock.Anything).Return(savedAccount, nil)
-	transactionRepository.On("SaveDetail", mock.MatchedBy(func(req model.TransactionDetail) bool {
-		assert.Equal(t, "1500000.00", req.Needs)
-		assert.Equal(t, "1200000.00", req.Wants)
-		assert.Equal(t, "300000.00", req.Invest)
-		return true
-	})).Return(savedDetail, nil)
 	transactionRepository.On("Save", mock.MatchedBy(func(req model.Transaction) bool {
 		assert.Equal(t, request.Title, req.Title)
 		assert.Equal(t, request.Amount, req.Amount)
@@ -210,6 +201,5 @@ func TestTransactionServiceImpl_CreateIncome(t *testing.T) {
 	assert.NoError(t, err)
 
 	userAccountRepository.AssertNumberOfCalls(t, "FindByID", 1)
-	transactionRepository.AssertNumberOfCalls(t, "SaveDetail", 1)
 	transactionRepository.AssertNumberOfCalls(t, "Save", 1)
 }

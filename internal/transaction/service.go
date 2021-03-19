@@ -71,14 +71,12 @@ func (t *ServiceImpl) CreateIncome(request model.CreateTransaction) error {
 		Status:              request.Status,
 	}
 
-	detail := t.TransactionRepository.SaveDetail(*transactionDetail)
-
 	transaction := model.Transaction{
 		TransactionID:   transactionID,
 		Title:           request.Title,
 		Amount:          request.Amount,
 		TransactionDate: request.TransactionDate,
-		Detail:          detail,
+		Detail:          transactionDetail,
 		User:            account,
 	}
 
@@ -117,14 +115,12 @@ func (t *ServiceImpl) CreateOutcome(request model.CreateTransaction) error {
 		transactionDetail.Invest = request.Amount
 	}
 
-	detail := t.TransactionRepository.SaveDetail(*transactionDetail)
-
 	transaction := &model.Transaction{
 		TransactionID:   transactionID,
 		Title:           request.Title,
 		Amount:          request.Amount,
 		TransactionDate: request.TransactionDate,
-		Detail:          detail,
+		Detail:          transactionDetail,
 		User:            account,
 	}
 

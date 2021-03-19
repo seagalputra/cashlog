@@ -11,7 +11,7 @@ type RepositoryMock struct {
 }
 
 // FindByID is mock of FindByID function for finding transaction by row id
-func (t *RepositoryMock) FindByID(transactionID string) *model.Transaction {
+func (t *RepositoryMock) FindByTransactionID(transactionID string) *model.Transaction {
 	args := t.Called(transactionID)
 	return args.Get(0).(*model.Transaction)
 }
@@ -20,9 +20,4 @@ func (t *RepositoryMock) FindByID(transactionID string) *model.Transaction {
 func (t *RepositoryMock) Save(transaction model.Transaction) *model.Transaction {
 	args := t.Called(transaction)
 	return args.Get(0).(*model.Transaction)
-}
-
-func (t *RepositoryMock) SaveDetail(transactionDetail model.TransactionDetail) *model.TransactionDetail {
-	args := t.Called(transactionDetail)
-	return args.Get(0).(*model.TransactionDetail)
 }
