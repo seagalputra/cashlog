@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
 	"github.com/seagalputra/cashlog/internal/pkg/config"
 	"github.com/seagalputra/cashlog/internal/pkg/db"
 	"github.com/seagalputra/cashlog/internal/transaction"
@@ -33,7 +32,6 @@ func main() {
 	defer conn.Close()
 
 	router := chi.NewRouter()
-	router.Use(middleware.Logger)
 	// router.Use(auth.Middleware())
 
 	port := config.Get("PORT")

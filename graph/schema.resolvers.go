@@ -16,12 +16,12 @@ func (r *mutationResolver) Login(ctx context.Context, username string, password 
 }
 
 func (r *mutationResolver) Register(ctx context.Context, newUser model.RegisterUser) (*model.AuthPayload, error) {
-	_, err := r.UserService.RegisterAccount(newUser)
+	auth, err := r.UserService.RegisterAccount(newUser)
 	if err != nil {
 		return &model.AuthPayload{}, err
 	}
 
-	return &model.AuthPayload{}, nil
+	return auth, nil
 }
 
 func (r *mutationResolver) CreateTransaction(ctx context.Context, newTransaction model.CreateTransaction) (*model.Transaction, error) {
