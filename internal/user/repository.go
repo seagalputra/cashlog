@@ -42,7 +42,7 @@ func (u *RepositoryImpl) Save(account *model.User) *model.User {
 // FindByID is function to finding user data based on their row id.
 func (u *RepositoryImpl) FindByID(id int64) *model.User {
 	user := new(model.User)
-	query := "SELECT * FROM user_account WHERE user_account.id = $1"
+	query := "SELECT * FROM user_account ua WHERE ua.id = $1"
 	stmt, err := u.DB.Prepare(query)
 	if err != nil {
 		log.Print(err)
@@ -63,7 +63,7 @@ func (u *RepositoryImpl) FindByID(id int64) *model.User {
 // Username is always unique. So, there aren't duplicate username in database.
 func (u *RepositoryImpl) FindByUsername(username string) *model.User {
 	user := new(model.User)
-	query := "SELECT * FROM user_account WHERE user_account.username = $1"
+	query := "SELECT * FROM user_account ua WHERE ua.username = $1"
 	stmt, err := u.DB.Prepare(query)
 	if err != nil {
 		log.Print(err)

@@ -1,7 +1,7 @@
 package transaction
 
 import (
-	"errors"
+	"fmt"
 	"log"
 	"strconv"
 
@@ -12,7 +12,7 @@ import (
 
 // Service interface for transaction
 type Service interface {
-	CreateTransaction(request model.CreateTransaction) (*model.Transaction, error)
+	CreateTransaction(request TransactionReq) (*model.Transaction, error)
 	Show(from string, to string) ([]model.Transaction, error)
 }
 
@@ -33,6 +33,11 @@ type detailAmount struct {
 	needs  string
 	wants  string
 	invest string
+}
+
+type TransactionReq struct {
+	UserID string
+	Trx model.CreateTransaction
 }
 
 func (t *ServiceImpl) Show(from string, to string) ([]model.Transaction, error) {
@@ -72,34 +77,38 @@ func getOutcomeAmount(amount string, trxType string) (*detailAmount, error) {
 	case "invest":
 		outcome.invest = amount
 	default:
-		return nil, errors.New("failed to save outcome transaction")
+		return nil, fmt.Errorf("failed to save outcome transaction")
 	}
 
 	return outcome, nil
 }
 
-func (t *ServiceImpl) CreateTransaction(request model.CreateTransaction) (*model.Transaction, error) {
+func (t *ServiceImpl) CreateTransaction(request TransactionReq) (*model.Transaction, error) {
 	var err error
-	// TODO: Get user account from context
-	var id int64 = 1
-	account := t.UserRepository.FindByID(id)
+	id, err := strconv.Atoi(request.UserID)
+	if err != nil {
+		log.Print(err)
+		return &model.Transaction{}, fmt.Errorf("failed to save transaction")
+	}
+	account := t.UserRepository.FindByID(int64(id))
 
+	trxRequest := request.Trx
 	trxDetail := &model.TransactionDetail{
 		TransactionDetailID: uuid.NewV4().String(),
-		Description:         request.Description,
-		Status:              request.Status,
+		Description:         trxRequest.Description,
+		Status:              trxRequest.Status,
 	}
 
 	var split *detailAmount
-	if request.Status == model.TransactionStatusIncome {
-		split, err = splitAmount(request.Amount)
+	if trxRequest.Status == model.TransactionStatusIncome {
+		split, err = splitAmount(trxRequest.Amount)
 		if err != nil {
-			return nil, errors.New("failed to split income transaction")
+			return nil, fmt.Errorf("failed to split income transaction")
 		}
 	}
 
-	if request.Status == model.TransactionStatusOutcome {
-		split, err = getOutcomeAmount(request.Amount, *request.Type)
+	if trxRequest.Status == model.TransactionStatusOutcome {
+		split, err = getOutcomeAmount(trxRequest.Amount, *trxRequest.Type)
 		if err != nil {
 			return nil, err
 		}
@@ -111,17 +120,18 @@ func (t *ServiceImpl) CreateTransaction(request model.CreateTransaction) (*model
 
 	trx := model.Transaction{
 		TransactionID:   uuid.NewV4().String(),
-		Title:           request.Title,
-		Amount:          request.Amount,
-		TransactionDate: request.TransactionDate,
+		Title:           trxRequest.Title,
+		Amount:          trxRequest.Amount,
+		TransactionDate: trxRequest.TransactionDate,
 		Detail:          trxDetail,
 		User:            account,
 	}
 
 	savedTrx := t.TransactionRepository.Save(trx)
 	if savedTrx == nil {
-		return nil, errors.New("something wrong when saving transaction data")
+		return nil, fmt.Errorf("something wrong when saving transaction data")
 	}
+	savedTrx.User = account
 
 	return savedTrx, nil
 }

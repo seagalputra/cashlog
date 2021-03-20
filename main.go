@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/seagalputra/cashlog/internal/auth"
 	"log"
 	"net/http"
 	"os"
@@ -22,17 +23,17 @@ const defaultPort = "8080"
 func main() {
 	err := config.ReadConfig(os.Getenv("APP_ENV"), ".")
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 
 	conn, err := db.Connect(config.Get("DATABASE_URL"))
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 	defer conn.Close()
 
 	router := chi.NewRouter()
-	// router.Use(auth.Middleware())
+	router.Use(auth.Middleware())
 
 	port := config.Get("PORT")
 	if port == "" {

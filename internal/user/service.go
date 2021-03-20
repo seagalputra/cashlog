@@ -2,12 +2,10 @@ package user
 
 import (
 	"fmt"
-	"log"
-	"time"
-
 	"github.com/seagalputra/cashlog/graph/model"
+	"github.com/seagalputra/cashlog/internal/pkg/token"
+	"log"
 
-	"github.com/dgrijalva/jwt-go"
 	uuid "github.com/satori/go.uuid"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -36,32 +34,15 @@ func (u *ServiceImpl) Authenticate(request model.Login) (*model.AuthPayload, err
 		return &model.AuthPayload{}, fmt.Errorf("wrong password")
 	}
 
-	token, err := u.createToken(user.ID)
+	jwt, err := token.Generate(user.ID)
 	if err != nil {
 		log.Print(err)
 		return nil, fmt.Errorf("failed to authenticate account")
 	}
 
-	response := &model.AuthPayload{Token: token}
+	response := &model.AuthPayload{Token: jwt}
 
 	return response, nil
-}
-
-func (u *ServiceImpl) createToken(userID string) (string, error) {
-	// TODO: Change this secret key with key from environment variable
-	secret := "secret"
-	claims := jwt.MapClaims{}
-	claims["authorized"] = true
-	claims["user_id"] = userID
-	claims["exp"] = time.Now().Add(time.Minute * 15).Unix()
-
-	unsignedToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	token, err := unsignedToken.SignedString([]byte(secret))
-	if err != nil {
-		return "", err
-	}
-
-	return token, nil
 }
 
 // RegisterAccount is function for registering given account
@@ -92,11 +73,11 @@ func (u *ServiceImpl) RegisterAccount(request model.RegisterUser) (*model.AuthPa
 	}
 
 	savedAccount := u.UserRepo.Save(account)
-	token, err := u.createToken(savedAccount.ID)
+	jwt, err := token.Generate(savedAccount.ID)
 	if err != nil {
 		log.Print(err)
 		return &model.AuthPayload{}, fmt.Errorf(errMsg)
 	}
 
-	return &model.AuthPayload{Token: token}, nil
+	return &model.AuthPayload{Token: jwt}, nil
 }

@@ -6,40 +6,59 @@ package graph
 import (
 	"context"
 	"fmt"
-
 	"github.com/seagalputra/cashlog/graph/generated"
 	"github.com/seagalputra/cashlog/graph/model"
+	"github.com/seagalputra/cashlog/internal/auth"
+	"github.com/seagalputra/cashlog/internal/transaction"
 )
 
 func (r *mutationResolver) Login(ctx context.Context, username string, password string) (*model.AuthPayload, error) {
-	panic(fmt.Errorf("not implemented"))
-}
+	login := model.Login{
+		Username: username,
+		Password: password,
+	}
 
-func (r *mutationResolver) Register(ctx context.Context, newUser model.RegisterUser) (*model.AuthPayload, error) {
-	auth, err := r.UserService.RegisterAccount(newUser)
+	payload, err := r.UserService.Authenticate(login)
 	if err != nil {
 		return &model.AuthPayload{}, err
 	}
 
-	return auth, nil
+	return payload, nil
+}
+
+func (r *mutationResolver) Register(ctx context.Context, newUser model.RegisterUser) (*model.AuthPayload, error) {
+	payload, err := r.UserService.RegisterAccount(newUser)
+	if err != nil {
+		return &model.AuthPayload{}, err
+	}
+
+	return payload, nil
 }
 
 func (r *mutationResolver) CreateTransaction(ctx context.Context, newTransaction model.CreateTransaction) (*model.Transaction, error) {
-	var err error
+	userID := auth.ForContext(ctx)
+	if userID == "" {
+		return &model.Transaction{}, fmt.Errorf("access denied")
+	}
 
-	transaction, err := r.TransactionService.CreateTransaction(newTransaction)
+	var err error
+	req := transaction.TransactionReq{
+		UserID: userID,
+		Trx:    newTransaction,
+	}
+	trx, err := r.TransactionService.CreateTransaction(req)
 	if err != nil {
 		return &model.Transaction{}, err
 	}
 
-	return transaction, nil
+	return trx, nil
 }
 
 func (r *queryResolver) Transaction(ctx context.Context, transactionID string) (*model.Transaction, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 
-func (r *queryResolver) Transactions(ctx context.Context) ([]*model.Transaction, error) {
+func (r *queryResolver) Transactions(ctx context.Context, from string, to string) ([]*model.Transaction, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 

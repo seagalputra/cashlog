@@ -38,7 +38,7 @@ type User {
 
 type Query {
 	transaction(transactionId: String!): Transaction!
-	transactions: [Transaction!]!
+	transactions(from: String!, to: String!): [Transaction!]!
 }
 
 input RegisterUser {
