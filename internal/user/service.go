@@ -1,10 +1,11 @@
 package user
 
 import (
-	"errors"
 	"fmt"
-	"github.com/seagalputra/cashlog/graph/model"
+	"log"
 	"time"
+
+	"github.com/seagalputra/cashlog/graph/model"
 
 	"github.com/dgrijalva/jwt-go"
 	uuid "github.com/satori/go.uuid"
@@ -24,19 +25,21 @@ type ServiceImpl struct {
 
 // Authenticate is function for authentice user account.
 func (u *ServiceImpl) Authenticate(request model.Login) (*model.AuthPayload, error) {
-	userAccount, err := u.UserRepo.FindByUsername(request.Username)
-	if err != nil {
-		return nil, fmt.Errorf("User.Authenticate : %v", err)
+	user := u.UserRepo.FindByUsername(request.Username)
+	if user == nil {
+		return &model.AuthPayload{}, fmt.Errorf("user doesn't exist")
 	}
 
-	// TODO : Validate username and encoded password
-	if userAccount.Username != request.Username || userAccount.Password != request.Password {
-		return nil, errors.New("Username or Password is invalid")
+	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(request.Password))
+	if err != nil {
+		log.Print(err)
+		return &model.AuthPayload{}, fmt.Errorf("wrong password")
 	}
 
-	token, err := u.createToken(userAccount.ID)
+	token, err := u.createToken(user.ID)
 	if err != nil {
-		return nil, fmt.Errorf("User.Authenticate : %v", err)
+		log.Print(err)
+		return nil, fmt.Errorf("failed to authenticate account")
 	}
 
 	response := &model.AuthPayload{Token: token}
@@ -46,7 +49,7 @@ func (u *ServiceImpl) Authenticate(request model.Login) (*model.AuthPayload, err
 
 func (u *ServiceImpl) createToken(userID string) (string, error) {
 	// TODO: Change this secret key with key from environment variable
-	secret := "asdfghjkl"
+	secret := "secret"
 	claims := jwt.MapClaims{}
 	claims["authorized"] = true
 	claims["user_id"] = userID
@@ -55,7 +58,7 @@ func (u *ServiceImpl) createToken(userID string) (string, error) {
 	unsignedToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	token, err := unsignedToken.SignedString([]byte(secret))
 	if err != nil {
-		return "", fmt.Errorf("User.createToken : %v", err)
+		return "", err
 	}
 
 	return token, nil
@@ -63,16 +66,18 @@ func (u *ServiceImpl) createToken(userID string) (string, error) {
 
 // RegisterAccount is function for registering given account
 func (u *ServiceImpl) RegisterAccount(request model.RegisterUser) (*model.AuthPayload, error) {
+	errMsg := "failed to register account"
 	userID := uuid.NewV4().String()
 
-	_, err := u.UserRepo.FindByUsername(request.Username)
-	if err == nil {
-		return nil, errors.New("User already exist")
+	user := u.UserRepo.FindByUsername(request.Username)
+	if user != nil {
+		return &model.AuthPayload{}, fmt.Errorf("user already registered")
 	}
 
 	encrypted, err := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.DefaultCost)
 	if err != nil {
-		return nil, fmt.Errorf("User.RegisterAccount : %v", err)
+		log.Print(err)
+		return &model.AuthPayload{}, fmt.Errorf(errMsg)
 	}
 
 	account := &model.User{
@@ -86,9 +91,12 @@ func (u *ServiceImpl) RegisterAccount(request model.RegisterUser) (*model.AuthPa
 		IsVerified: false,
 	}
 
-	if err := u.UserRepo.Save(account); err != nil {
-		return nil, fmt.Errorf("User.RegisterAccount : %v", err)
+	savedAccount := u.UserRepo.Save(account)
+	token, err := u.createToken(savedAccount.ID)
+	if err != nil {
+		log.Print(err)
+		return &model.AuthPayload{}, fmt.Errorf(errMsg)
 	}
 
-	return &model.AuthPayload{}, nil
+	return &model.AuthPayload{Token: token}, nil
 }

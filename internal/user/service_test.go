@@ -1,9 +1,9 @@
 package user
 
 import (
-	"errors"
-	"github.com/seagalputra/cashlog/graph/model"
 	"testing"
+
+	"github.com/seagalputra/cashlog/graph/model"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -22,14 +22,26 @@ func TestUserServiceImpl_RegisterAccount(t *testing.T) {
 		Email:     "testing1234@email.com",
 	}
 
-	repo.On("FindByUsername", mock.Anything).Return(&model.User{}, errors.New("No result set"))
+	savedAccount := &model.User{
+		ID:         "1",
+		UserID:     "some user id",
+		FirstName:  "Dwiferdio Seagal",
+		LastName:   "Putra",
+		Username:   "test1234",
+		Password:   "$2a$10$bhFsfifxr2EPiqoqxwMwt.UGO2CZQZwnVXuE5h7NgY7UEkq3IWUjq",
+		Email:      "testing1234@gmail.com",
+		IsDisabled: false,
+		IsVerified: false,
+	}
+
+	repo.On("FindByUsername", mock.Anything).Return(nil)
 	repo.On("Save", mock.MatchedBy(func(req *model.User) bool {
 		assert.Equal(t, userRequest.Email, req.Email)
 		assert.Equal(t, userRequest.FirstName, req.FirstName)
 		assert.Equal(t, userRequest.LastName, req.LastName)
 		assert.Equal(t, userRequest.Username, req.Username)
 		return true
-	})).Return(nil)
+	})).Return(savedAccount)
 
 	response, err := userAccountService.RegisterAccount(userRequest)
 	assert.NoError(t, err)
@@ -55,7 +67,7 @@ func TestUserServiceImpl_AuthenticateUser(t *testing.T) {
 		FirstName:  "Dwiferdio Seagal",
 		LastName:   "Putra",
 		Username:   "test1234",
-		Password:   "12345",
+		Password:   "$2a$10$bhFsfifxr2EPiqoqxwMwt.UGO2CZQZwnVXuE5h7NgY7UEkq3IWUjq",
 		Email:      "testing1234@gmail.com",
 		IsDisabled: false,
 		IsVerified: false,

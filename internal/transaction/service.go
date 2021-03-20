@@ -2,7 +2,6 @@ package transaction
 
 import (
 	"errors"
-	"fmt"
 	"log"
 	"strconv"
 
@@ -80,12 +79,10 @@ func getOutcomeAmount(amount string, trxType string) (*detailAmount, error) {
 }
 
 func (t *ServiceImpl) CreateTransaction(request model.CreateTransaction) (*model.Transaction, error) {
+	var err error
 	// TODO: Get user account from context
 	var id int64 = 1
-	account, err := t.UserRepository.FindByID(id)
-	if err != nil {
-		return nil, errors.New(fmt.Sprintf("user with id %d not found", id))
-	}
+	account := t.UserRepository.FindByID(id)
 
 	trxDetail := &model.TransactionDetail{
 		TransactionDetailID: uuid.NewV4().String(),
