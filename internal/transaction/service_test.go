@@ -59,6 +59,8 @@ func TestTransactionServiceImpl_CreateOutcomeNeeds(t *testing.T) {
 		User:            savedAccount,
 	}
 
+	req := TransactionReq{UserID: "1", Trx: request}
+
 	userAccountRepository.On("FindByID", mock.Anything).Return(savedAccount, nil)
 	transactionRepository.On("Save", mock.MatchedBy(func(req model.Transaction) bool {
 		assert.Equal(t, request.Title, req.Title)
@@ -70,7 +72,7 @@ func TestTransactionServiceImpl_CreateOutcomeNeeds(t *testing.T) {
 		return true
 	})).Return(savedTrx)
 
-	trx, err := transactionService.CreateTransaction(request)
+	trx, err := transactionService.CreateTransaction(req)
 	assert.NoError(t, err)
 	assert.Equal(t, savedTrx, trx)
 
@@ -127,6 +129,8 @@ func TestTransactionServiceImpl_CreateOutcomeWants(t *testing.T) {
 		User:            savedAccount,
 	}
 
+	req := TransactionReq{UserID: "1", Trx: request}
+
 	userAccountRepository.On("FindByID", mock.Anything).Return(savedAccount, nil)
 	transactionRepository.On("Save", mock.MatchedBy(func(req model.Transaction) bool {
 		assert.Equal(t, request.Title, req.Title)
@@ -138,7 +142,7 @@ func TestTransactionServiceImpl_CreateOutcomeWants(t *testing.T) {
 		return true
 	})).Return(savedTrx)
 
-	trx, err := transactionService.CreateTransaction(request)
+	trx, err := transactionService.CreateTransaction(req)
 	assert.NoError(t, err)
 	assert.Equal(t, savedTrx, trx)
 
@@ -153,7 +157,7 @@ func TestTransactionServiceImpl_CreateIncome(t *testing.T) {
 	transactionService := &ServiceImpl{transactionRepository, userAccountRepository}
 
 	desc := "Monthly salary income"
-	request := &model.CreateTransaction{
+	request := model.CreateTransaction{
 		Title:           "Salary",
 		Amount:          "3000000.00",
 		TransactionDate: "2020-11-01",
@@ -193,6 +197,8 @@ func TestTransactionServiceImpl_CreateIncome(t *testing.T) {
 		User:            savedAccount,
 	}
 
+	req := TransactionReq{UserID: "1", Trx: request}
+
 	userAccountRepository.On("FindByID", mock.Anything).Return(savedAccount, nil)
 	transactionRepository.On("Save", mock.MatchedBy(func(req model.Transaction) bool {
 		assert.Equal(t, request.Title, req.Title)
@@ -201,7 +207,7 @@ func TestTransactionServiceImpl_CreateIncome(t *testing.T) {
 		return true
 	})).Return(savedTrx)
 
-	trx, err := transactionService.CreateTransaction(*request)
+	trx, err := transactionService.CreateTransaction(req)
 
 	assert.NoError(t, err)
 	assert.Equal(t, savedTrx, trx)
