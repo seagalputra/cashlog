@@ -9,6 +9,9 @@ DB_PASSWORD=
 run-monolith:
 	APP_ENV=${APP_ENVIRONMENT} go run main.go
 
+run-next-dev:
+	cd web && yarn run dev
+
 generate-graphql:
 	go run github.com/99designs/gqlgen generate
 
