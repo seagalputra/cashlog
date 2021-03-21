@@ -52,7 +52,7 @@ const TransactionHistory: NextPage = () => {
 				<div className="flex justify-center mt-8">
 					<input
 						className="border-2 py-4 pl-6 rounded-2xl w-full max-w-xl"
-						style={{ borderColor: "#18191F" }}
+						style={{ borderColor: "#18191F", boxShadow: "0px 2px 0px #18191F" }}
 						type="text"
 						placeholder="Search transaction"
 					/>
