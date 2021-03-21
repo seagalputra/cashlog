@@ -1,6 +1,6 @@
 import BalanceCard from "./BalanceCard";
 
-const Banner: React.FC = () => {
+const Banner = () => {
 	return (
 		<>
 			<div

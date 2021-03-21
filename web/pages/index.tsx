@@ -1,8 +1,9 @@
 import { NextPage } from "next";
 import Head from "next/head";
+import Link from "next/Link";
 import Banner from "../components/Banner";
 
-const ListItem = () => {
+export const ListItem = () => {
 	return (
 		<div className="flex justify-between items-center max-w-xl mx-auto my-12">
 			<div className="flex items-center">
@@ -80,20 +81,22 @@ const Home: NextPage = () => {
 					>
 						Recent Transaction
 					</p>
-					<button
-						className="text-2xl"
-						style={{
-							fontFamily: "Montserrat, sans-serif",
-							color: "#F95A2C",
-							fontWeight: "bold",
-						}}
-					>
-						see all
-					</button>
+					<Link href="/history">
+						<a
+							className="text-2xl"
+							style={{
+								fontFamily: "Montserrat, sans-serif",
+								color: "#F95A2C",
+								fontWeight: "bold",
+							}}
+						>
+							see all
+						</a>
+					</Link>
 				</div>
-				{Array(4)
-					.fill(<ListItem />)
-					.map((item) => item)}
+				{["1", "2", "3", "4"].map((item) => (
+					<ListItem key={item} />
+				))}
 			</main>
 		</>
 	);
