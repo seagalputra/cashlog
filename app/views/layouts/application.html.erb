@@ -11,6 +11,14 @@
   </head>
 
   <body>
-    <%= yield %>
+		<%= render 'shared/navbar' %>
+
+		<div class="flex flex-shrink-0 min-h-screen antialiased bg-gray-50 space-x-6">
+			<%= render 'shared/sidebar' %>
+
+			<div class="py-6">
+				<%= yield %>
+			</div>
+		</div>
   </body>
 </html>
