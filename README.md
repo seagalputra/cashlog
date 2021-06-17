@@ -1,15 +1,24 @@
-# 💰 Cashlog
+# README
 
-## Description
+This README would normally document whatever steps are necessary to get the
+application up and running.
 
-Log your expenses using Cashlog. Sometimes you too lazy to open the spreadsheet or don't want to using an mobile application because there's no space available in your smartphone. You can use Cashlog to log your expenses. You don't need to install because it's on the web.
+Things you may want to cover:
 
-Register now, don't forget to hit the star button. CHEERS! 🍻
+* Ruby version
 
-## Features
+* System dependencies
 
-🚧 Under construction
+* Configuration
 
-## Notes
+* Database creation
 
-🚧 Under construction
+* Database initialization
+
+* How to run the test suite
+
+* Services (job queues, cache servers, search engines, etc.)
+
+* Deployment instructions
+
+* ...
