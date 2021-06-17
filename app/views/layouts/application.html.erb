@@ -11,14 +11,18 @@
   </head>
 
   <body>
-		<%= render 'shared/navbar' %>
+		<div id="app">
+			<%= render 'shared/navbar' %>
 
-		<div class="flex flex-shrink-0 min-h-screen antialiased bg-gray-50 space-x-6">
-			<%= render 'shared/sidebar' %>
+			<aside class="fixed inset-y-0 hidden pt-20 overflow-x-hidden overflow-y-auto sm:block">
+				<%= render 'shared/sidebar' %>
+			</aside>
 
-			<div class="py-6">
-				<%= yield %>
-			</div>
+			<main class="pt-20 sm:pl-64">
+				<div class="p-4">
+					<%= yield %>
+				</div>
+			</main>
 		</div>
   </body>
 </html>
