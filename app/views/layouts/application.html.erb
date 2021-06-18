@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Cashlog</title>
+		<title>Cashlog | Manage your money effectively and efficient</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -14,11 +14,11 @@
 		<div id="app">
 			<%= render 'shared/navbar' %>
 
-			<aside class="fixed inset-y-0 hidden pt-20 overflow-x-hidden overflow-y-auto sm:block">
+			<aside class="fixed inset-y-0 hidden pt-16 overflow-x-hidden overflow-y-auto sm:block">
 				<%= render 'shared/sidebar' %>
 			</aside>
 
-			<main class="pt-20 sm:pl-64">
+			<main class="pt-16 bg-gray-100 sm:pl-64">
 				<div class="p-4">
 					<%= yield %>
 				</div>
