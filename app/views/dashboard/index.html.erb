@@ -23,23 +23,3 @@
 		</div>
 	</div>
 </div>
-
-<div class="flex flex-row items-center mt-6 gap-4">
-	<p class="text-xl font-semibold text-gray-400 flex-0">Recent Transactions</p>
-	<div class="flex-grow border-b"></div>
-</div>
-
-<div class="mt-4 bg-white border">
-	<table class="w-full">
-		<tr class="text-left text-gray-600 bg-gray-100 border-b">
-			<% ['No', 'Title', 'Price', 'Date', 'Needs', 'Wants', 'Invest', 'Notes'].each do |head| %>
-				<th class="p-4"><%= head %></th>
-			<% end %>
-		</tr>
-		<tr>
-			<% ['1', 'Penghasilan', 'Rp 4.800.000', '01/28/2021', 'Rp 2.400.000', 'Rp 1.920.000', 'Rp 480.000', '-'].each do |data| %>
-				<td class="p-4"><%= data %></td>
-			<% end %>
-		</tr>
-	</table>
-</div>

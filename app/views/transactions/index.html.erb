@@ -1,0 +1,25 @@
+<div class="flex flex-row items-center gap-4">
+	<p class="text-xl font-semibold text-gray-400 flex-0">Transactions</p>
+	<div class="flex-grow border-b"></div>
+</div>
+
+<div class="mt-4 bg-white border">
+	<table class="w-full">
+		<tr class="text-left text-gray-600 bg-gray-100 border-b">
+			<% ['Title', 'Price', 'Date', 'Needs', 'Wants', 'Invest', 'Notes'].each do |head| %>
+				<th class="p-4"><%= head %></th>
+			<% end %>
+		</tr>
+		<% @transactions.each do |transaction| %>
+			<tr>
+				<td class="p-4"><%= transaction.title %></td>
+				<td class="p-4"><%= number_to_currency transaction.price, unit: 'Rp ', separator: ',', delimiter: '.', precision: 0 %></td>
+				<td class="p-4"><%= l transaction.created_at, format: :long %></td>
+				<td class="p-4"><%= number_to_currency transaction.needs, unit: 'Rp ', separator: ',', delimiter: '.', precision: 0 %></td>
+				<td class="p-4"><%= number_to_currency transaction.wants, unit: 'Rp ', separator: ',', delimiter: '.', precision: 0 %></td>
+				<td class="p-4"><%= number_to_currency transaction.invest, unit: 'Rp ', separator: ',', delimiter: '.', precision: 0 %></td>
+				<td class="p-4"><%= transaction.notes.present? ? transaction.notes : '-' %></td>
+			</tr>
+		<% end %>
+	</table>
+</div>
