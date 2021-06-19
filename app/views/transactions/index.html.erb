@@ -6,19 +6,33 @@
 <div class="mt-4 bg-white border">
 	<table class="w-full">
 		<tr class="text-left text-gray-600 bg-gray-100 border-b">
-			<% ['Title', 'Price', 'Date', 'Needs', 'Wants', 'Invest', 'Notes'].each do |head| %>
+			<% ['Title', 'Price', 'Date', 'Needs', 'Wants', 'Invest', 'Notes', 'Action'].each do |head| %>
 				<th class="p-4"><%= head %></th>
 			<% end %>
 		</tr>
 		<% @transactions.each do |transaction| %>
 			<tr>
-				<td class="p-4"><%= transaction.title %></td>
-				<td class="p-4"><%= number_to_currency transaction.price, unit: 'Rp ', separator: ',', delimiter: '.', precision: 0 %></td>
-				<td class="p-4"><%= l transaction.created_at, format: :long %></td>
-				<td class="p-4"><%= number_to_currency transaction.needs, unit: 'Rp ', separator: ',', delimiter: '.', precision: 0 %></td>
-				<td class="p-4"><%= number_to_currency transaction.wants, unit: 'Rp ', separator: ',', delimiter: '.', precision: 0 %></td>
-				<td class="p-4"><%= number_to_currency transaction.invest, unit: 'Rp ', separator: ',', delimiter: '.', precision: 0 %></td>
-				<td class="p-4"><%= transaction.notes.present? ? transaction.notes : '-' %></td>
+				<td class="p-4">
+					<p><%= transaction.title %></p>
+				</td>
+				<td class="p-4">
+					<p><%= number_to_currency transaction.price, unit: 'Rp ', separator: ',', delimiter: '.', precision: 0 %></p>
+				</td>
+				<td class="p-4">
+					<p><%= l transaction.created_at, format: :long %></p>
+				</td>
+				<td class="p-4">
+					<p><%= number_to_currency transaction.needs, unit: 'Rp ', separator: ',', delimiter: '.', precision: 0 %></p>
+				</td>
+				<td class="p-4">
+					<p><%= number_to_currency transaction.wants, unit: 'Rp ', separator: ',', delimiter: '.', precision: 0 %></p>
+				</td>
+				<td class="p-4">
+					<p><%= number_to_currency transaction.invest, unit: 'Rp ', separator: ',', delimiter: '.', precision: 0 %></p>
+				</td>
+				<td class="max-w-xs p-4">
+					<p class="truncate"><%= transaction.notes.present? ? transaction.notes : '-' %></p>
+				</td>
 			</tr>
 		<% end %>
 	</table>
