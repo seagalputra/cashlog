@@ -6,20 +6,48 @@
 <div class="flex justify-between gap-2">
 	<div class="w-full p-4 bg-white border">
 		<div class="flex flex-col gap-1">
-			<p class="text-2xl font-bold">Rp 1.500.000</p>
+			<p class="text-2xl font-bold"><%= number_to_currency @needs, unit: 'Rp ', separator: ',', delimiter: '.', precision: 0 %></p>
 			<p class="font-light text-gray-400">Needs</p>
 		</div>
 	</div>
 	<div class="w-full p-4 bg-white border">
 		<div class="flex flex-col gap-1">
-			<p class="text-2xl font-bold">Rp 540.000</p>
+			<p class="text-2xl font-bold"><%= number_to_currency @wants, unit: 'Rp ', separator: ',', delimiter: '.', precision: 0 %></p>
 			<p class="font-light text-gray-400">Wants</p>
 		</div>
 	</div>
 	<div class="w-full p-4 bg-white border">
 		<div class="flex flex-col gap-1">
-			<p class="text-2xl font-bold">Rp 400.000</p>
+			<p class="text-2xl font-bold"><%= number_to_currency @invest, unit: 'Rp ', separator: ',', delimiter: '.', precision: 0 %></p>
 			<p class="font-light text-gray-400">Invest</p>
 		</div>
 	</div>
+</div>
+
+<div class="flex flex-row items-center mt-6 mb-6 gap-4">
+	<p class="text-xl font-semibold text-gray-400 flex-0">Recent Transactions</p>
+	<div class="flex-grow border-b"></div>
+	<%= link_to 'View more', transactions_path, class: 'text-gray-400 hover:text-gray-500 text-sm' %>
+</div>
+
+<div class="mt-4 bg-white border grid grid-cols-1 divide-y">
+	<% @recent_transactions.each do |transaction| %>
+		<div class="flex items-center justify-between p-5">
+			<div class="flex gap-5">
+				<div class="flex items-center justify-center bg-blue-400 rounded-full" style="width: 50px; height: 50px;">
+					<p class="font-semibold text-white"><%= generate_transaction_icon transaction.title %></p>
+				</div>
+
+				<div class="flex flex-col gap-1">
+					<p class="font-sans text-lg font-bold"><%= transaction.title %></p>
+					<p class="font-sans text-gray-400 text-md"><%= l transaction.created_at, format: :short %></p>
+				</div>
+			</div>
+
+			<div class="flex flex-col items-end gap-1">
+				<p class="font-sans text-lg font-bold <%= transaction.type == 'income' ? 'text-green-500' : 'text-red-500' %>"><%= currency_idr_format transaction.price %></p>
+				<p class="font-sans text-gray-400 text-md"><%= transaction.type.capitalize %></p>
+			</div>
+		</div>
+	<% end %>
 </div>

@@ -1,3 +1,6 @@
 class DashboardController < ApplicationController
-  def index; end
+  def index
+    @needs, @wants, @invest = Transaction.summaries
+    @recent_transactions = Transaction.all.limit(10)
+  end
 end
