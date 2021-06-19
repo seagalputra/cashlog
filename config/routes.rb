@@ -3,5 +3,8 @@ Rails.application.routes.draw do
 
   root 'dashboard#index'
 
-  get 'transactions', to: 'transactions#index', as: :transactions
+  # get 'transactions', to: 'transactions#index', as: :transactions
+  # get 'transactions/new', to: 'transactions#new', as: :transaction_new
+
+  resources :transactions
 end
