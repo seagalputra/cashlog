@@ -4,4 +4,14 @@ class TransactionsController < ApplicationController
   end
 
   def new; end
+
+  def destroy
+    @transaction = Transaction.find(params[:id])
+
+    if @transaction.destroy
+      redirect_to transactions_path, notice: 'Transaction successfully removed'
+    else
+      redirect_to transactions_path, alert: 'Failed to remove transaction'
+    end
+  end
 end
