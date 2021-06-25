@@ -1,4 +1,6 @@
 class TransactionsController < ApplicationController
+  layout 'dashboard'
+
   def index
     @transactions = Transaction.all
   end

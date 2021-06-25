@@ -11,6 +11,20 @@
   </head>
 
   <body>
-		<%= yield %>
+    <div id="app">
+	    <%= render 'shared/navbar' %>
+
+	    <aside class="fixed inset-y-0 hidden pt-16 overflow-x-hidden overflow-y-auto bg-white border-r border-md sm:block">
+	    	<%= render 'shared/sidebar' %>
+	    </aside>
+
+	    <main class="min-h-screen pt-16 bg-gray-100 sm:pl-64">
+	    	<div class="px-6 py-4">
+	    		<%= yield :dashboard %>
+	    	</div>
+	    </main>
+    </div>
   </body>
 </html>
+
+
