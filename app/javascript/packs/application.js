@@ -7,7 +7,8 @@ import Rails from "@rails/ujs";
 import Turbolinks from "turbolinks";
 import * as ActiveStorage from "@rails/activestorage";
 import "channels";
-import tableModal from "./transaction-table.js";
+import tableModal from "./transaction-table";
+import "./modal-dialog";
 
 Rails.start();
 Turbolinks.start();
