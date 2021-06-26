@@ -11,6 +11,12 @@
   </head>
 
   <body>
-		<%= yield %>
+    <%= render 'shared/navbar' %>
+
+    <main class="min-h-screen pt-16 bg-gray-100">
+      <div class="px-6 py-4 container mx-auto md:max-w-2xl">
+        <%= yield %>
+      </div>
+    </main>
   </body>
 </html>

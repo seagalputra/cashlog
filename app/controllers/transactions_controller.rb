@@ -1,11 +1,16 @@
 class TransactionsController < ApplicationController
-  layout 'dashboard'
 
   def index
     @transactions = Transaction.all
   end
 
-  def new; end
+  def new
+    @transaction = Transaction.new
+  end
+
+  def create
+    redirect_to transactions_path, notice: 'Transaction successfully added'
+  end
 
   def destroy
     @transaction = Transaction.find(params[:id])

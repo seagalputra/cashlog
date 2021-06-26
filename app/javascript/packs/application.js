@@ -7,15 +7,15 @@ import Rails from "@rails/ujs";
 import Turbolinks from "turbolinks";
 import * as ActiveStorage from "@rails/activestorage";
 import "channels";
-import tableModal from "./transaction-table";
 import "./modal-dialog";
+import { toggleDropdown } from "./dropdown-nav";
 
 Rails.start();
 Turbolinks.start();
 ActiveStorage.start();
 
 document.addEventListener("turbolinks:load", () => {
-	tableModal();
+  toggleDropdown();
 });
 
 import "../../assets/stylesheets/application";
