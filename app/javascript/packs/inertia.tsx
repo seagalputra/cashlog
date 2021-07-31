@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
   render(
     <App
       initialPage={JSON.parse(el.dataset.page)}
-      resolveComponent={(name) => require(`../Pages/${name}`).default}
+      resolveComponent={(name) => require(`../pages/${name}`).default}
     />,
     el
   );
