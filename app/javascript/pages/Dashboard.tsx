@@ -1,8 +1,7 @@
 import React from "react";
-import { Link } from "@inertiajs/inertia-react";
 import Main from "../layouts/Main";
 
-import { Header } from "../components/Header";
+import { Header, List } from "../components";
 
 export default ({ recent_transactions, summary }) => {
   return (
@@ -35,11 +34,29 @@ export default ({ recent_transactions, summary }) => {
         <p className="text-xl font-semibold text-gray-400 flex-0">
           Recent Transactions
         </p>
-        <div className="flex-grow border-b"></div>
-        <Link href="#" className="text-gray-400 hover:text-gray-500">
-          View more
-        </Link>
       </div>
+
+      <List>
+        <List.Item>
+          <div className="flex gap-5 items-center">
+            <List.Icon width="50px" height="50px">
+              T
+            </List.Icon>
+
+            <div className="flex flex-col gap-1">
+              <p className="font-sans text-lg font-bold">Freelance</p>
+              <p className="font-sans text-gray-400 text-md">Aug 10, 2020</p>
+            </div>
+          </div>
+
+          <div className="flex flex-col items-end gap-1">
+            <p className="font-sans text-lg font-bold text-green-500">
+              Rp 50.000
+            </p>
+            <p className="font-sans text-gray-400 text-md">Income</p>
+          </div>
+        </List.Item>
+      </List>
     </Main>
   );
 };
