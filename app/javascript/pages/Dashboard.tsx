@@ -2,37 +2,33 @@ import React from "react";
 import { Link } from "@inertiajs/inertia-react";
 import Main from "../layouts/Main";
 
-export default ({ recent_transactions, summary }) => {
-  const { needs, wants, invest } = summary;
+import { Header } from "../components/Header";
 
+export default ({ recent_transactions, summary }) => {
   return (
     <Main>
-      <div className="w-full p-4 bg-white border mb-2">
-        <div className="flex flex-col gap-2">
+      <Header className="mb-2">
+        <Header.Item>
           <p className="font-light text-gray-400">Your current balance</p>
-          <p className="text-2xl font-bold">{needs}</p>
-        </div>
-      </div>
+          <p className="text-2xl font-bold">0</p>
+        </Header.Item>
+      </Header>
 
       <div className="flex justify-between gap-2">
-        <div className="w-full p-4 bg-white border">
-          <div className="flex flex-col gap-2">
-            <p className="text-lg font-bold">{needs}</p>
-            <p className="font-light text-gray-400">Needs</p>
-          </div>
-        </div>
-        <div className="w-full p-4 bg-white border">
-          <div className="flex flex-col gap-2">
-            <p className="text-lg font-bold">{wants}</p>
-            <p className="font-light text-gray-400">Wants</p>
-          </div>
-        </div>
-        <div className="w-full p-4 bg-white border">
-          <div className="flex flex-col gap-2">
-            <p className="text-lg font-bold">{invest}</p>
-            <p className="font-light text-gray-400">Invest</p>
-          </div>
-        </div>
+        {Object.entries(summary).map((obj, index) => {
+          const [key, value]: any = obj;
+          const [first, ...rest] = key;
+          return (
+            <Header key={`header-${index}`}>
+              <Header.Item>
+                <p className="text-lg font-bold">{value}</p>
+                <p className="font-light text-gray-400">
+                  {first.toUpperCase() + rest.join("")}
+                </p>
+              </Header.Item>
+            </Header>
+          );
+        })}
       </div>
 
       <div className="flex flex-row items-center mt-6 mb-6 gap-4">
