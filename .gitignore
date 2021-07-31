@@ -30,6 +30,7 @@
 
 /config/database.yml
 /config/mongoid.yml
+/config/definitions.rb
 
 /public/packs
 /public/packs-test
