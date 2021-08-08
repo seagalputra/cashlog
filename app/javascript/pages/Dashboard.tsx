@@ -3,13 +3,13 @@ import Main from "../layouts/Main";
 
 import { Summary, List, Menu, Icon } from "../components";
 
-export default ({ recent_transactions, summary }) => {
+export default ({ recent_transactions, summary, balance }) => {
   return (
     <Main>
       <Summary className="mb-2">
         <Summary.Item>
           <Summary.Title>Your current balance</Summary.Title>
-          <p className="text-2xl font-bold">0</p>
+          <p className="text-2xl font-bold">{balance}</p>
         </Summary.Item>
       </Summary>
 
@@ -49,25 +49,40 @@ export default ({ recent_transactions, summary }) => {
       </Menu>
 
       <List title="Recent Transactions">
-        <List.Item>
-          <div className="flex gap-5 items-center">
-            <List.Icon width="50px" height="50px">
-              T
-            </List.Icon>
-
-            <div className="flex flex-col gap-1">
-              <p className="font-sans text-lg font-bold">Freelance</p>
-              <p className="font-sans text-gray-400 text-md">Aug 10, 2020</p>
-            </div>
-          </div>
-
-          <div className="flex flex-col items-end gap-1">
-            <p className="font-sans text-lg font-bold text-green-500">
-              Rp 50.000
+        {recent_transactions.length == 0 ? (
+          <div className="flex flex-col justify-center items-center">
+            <Icon.Empty
+              className="mt-4"
+              width="96"
+              height="96"
+              color="#E5E7EB"
+            />
+            <p className="text-gray-200 font-bold text-2xl mt-4">Oops!</p>
+            <p className="text-gray-200 mb-4">
+              Looks like you don't have any transaction
             </p>
-            <p className="font-sans text-gray-400 text-md">Income</p>
           </div>
-        </List.Item>
+        ) : (
+          <List.Item>
+            <div className="flex gap-5 items-center">
+              <List.Icon width="50px" height="50px">
+                T
+              </List.Icon>
+
+              <div className="flex flex-col gap-1">
+                <p className="font-sans text-lg font-bold">Freelance</p>
+                <p className="font-sans text-gray-400 text-md">Aug 10, 2020</p>
+              </div>
+            </div>
+
+            <div className="flex flex-col items-end gap-1">
+              <p className="font-sans text-lg font-bold text-green-500">
+                Rp 50.000
+              </p>
+              <p className="font-sans text-gray-400 text-md">Income</p>
+            </div>
+          </List.Item>
+        )}
       </List>
     </Main>
   );
