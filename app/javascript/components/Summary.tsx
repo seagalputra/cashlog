@@ -2,7 +2,7 @@ import React from "react";
 import classNames from "classnames";
 import { GenericComponentProps } from "types/ComponentProps";
 
-export default function Header({
+export default function Summary({
   className,
   children,
   ...restProps
@@ -17,7 +17,22 @@ export default function Header({
   );
 }
 
-Header.Item = function HeaderItem({
+Summary.Title = function SummaryTitle({
+  className,
+  children,
+  ...restProps
+}: GenericComponentProps) {
+  return (
+    <p
+      className={classNames("font-light text-gray-400", className)}
+      {...restProps}
+    >
+      {children}
+    </p>
+  );
+};
+
+Summary.Item = function SummaryItem({
   className,
   children,
   ...restProps

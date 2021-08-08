@@ -8,9 +8,7 @@ export default function List({
   title,
   headerComponent,
   ...restProps
-}: {
-  className?: string;
-  children: any;
+}: GenericComponentProps & {
   title?: string;
   headerComponent?: any;
 }) {

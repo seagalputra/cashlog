@@ -1,34 +1,52 @@
 import React from "react";
 import Main from "../layouts/Main";
 
-import { Header, List } from "../components";
+import { Summary, List, Menu, Icon } from "../components";
 
 export default ({ recent_transactions, summary }) => {
   return (
     <Main>
-      <Header className="mb-2">
-        <Header.Item>
-          <p className="font-light text-gray-400">Your current balance</p>
+      <Summary className="mb-2">
+        <Summary.Item>
+          <Summary.Title>Your current balance</Summary.Title>
           <p className="text-2xl font-bold">0</p>
-        </Header.Item>
-      </Header>
+        </Summary.Item>
+      </Summary>
 
       <div className="flex justify-between gap-2">
         {Object.entries(summary).map((obj, index) => {
           const [key, value]: any = obj;
           const [first, ...rest] = key;
           return (
-            <Header key={`header-${index}`}>
-              <Header.Item>
+            <Summary key={`header-${index}`}>
+              <Summary.Item>
                 <p className="text-lg font-bold">{value}</p>
-                <p className="font-light text-gray-400">
+                <Summary.Title>
                   {first.toUpperCase() + rest.join("")}
-                </p>
-              </Header.Item>
-            </Header>
+                </Summary.Title>
+              </Summary.Item>
+            </Summary>
           );
         })}
       </div>
+
+      <Menu>
+        <Menu.Item>
+          <Icon.Wallet
+            className="flex items-center justify-center h-10 w-10 border rounded-full"
+            aria-hidden="true"
+          />
+          <Menu.Link to="#">Transaction</Menu.Link>
+        </Menu.Item>
+
+        <Menu.Item>
+          <Icon.File
+            className="flex items-center justify-center h-10 w-10 border rounded-full"
+            aria-hidden="true"
+          />
+          <Menu.Link to="#">History</Menu.Link>
+        </Menu.Item>
+      </Menu>
 
       <List title="Recent Transactions">
         <List.Item>
