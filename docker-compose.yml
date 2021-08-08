@@ -5,9 +5,6 @@ services:
     container_name: cashlog_mongo
     image: mongo:latest
     restart: unless-stopped
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER:-mongo}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-mongo}
     volumes:
       - cashlog_mongo_volume:/data/mongo
     ports:

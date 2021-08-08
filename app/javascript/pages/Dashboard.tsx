@@ -30,13 +30,7 @@ export default ({ recent_transactions, summary }) => {
         })}
       </div>
 
-      <div className="flex flex-row items-center mt-6 mb-6 gap-4">
-        <p className="text-xl font-semibold text-gray-400 flex-0">
-          Recent Transactions
-        </p>
-      </div>
-
-      <List>
+      <List title="Recent Transactions">
         <List.Item>
           <div className="flex gap-5 items-center">
             <List.Icon width="50px" height="50px">
