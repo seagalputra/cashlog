@@ -11,7 +11,7 @@ gem 'sprockets-rails'
 gem 'sqlite3', '~> 1.4'
 gem 'stimulus-rails'
 gem 'turbo-rails'
-# gem "redis", "~> 4.0"
+gem "redis", "~> 4.0"
 # gem "bcrypt", "~> 3.1.7"
 gem 'bootsnap', require: false
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
@@ -24,6 +24,7 @@ end
 
 group :development do
   gem 'web-console'
+  gem 'solargraph'
   # gem "spring"
 end
 
