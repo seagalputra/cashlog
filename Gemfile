@@ -24,7 +24,7 @@ end
 
 group :development do
   gem 'web-console'
-  gem 'solargraph'
+  gem 'rubocop'
   # gem "spring"
 end
 

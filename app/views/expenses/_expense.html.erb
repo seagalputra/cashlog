@@ -6,12 +6,12 @@
 
   <p class="my-5">
     <strong class="block font-medium mb-1">Price:</strong>
-    <%= expense.price %>
+    <%= number_to_currency_idr(expense.price) %>
   </p>
 
   <p class="my-5">
     <strong class="block font-medium mb-1">Date:</strong>
-    <%= expense.date %>
+    <%= expense.date.strftime('%a, %d %b %Y') %>
   </p>
 
   <p class="my-5">

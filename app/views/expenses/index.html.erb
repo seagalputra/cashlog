@@ -7,7 +7,7 @@
         <h1 class="font-semibold text-md"><%= expense.title %></h1>
         <p class="text-sm text-gray-400"><%= expense.date.strftime('%a, %d %b %Y') %></p>
       </div>
-      <p class="text-green-500 text-sm"><%= number_to_currency(expense.price, unit: 'Rp', separator: ',', delimiter: '.', precision: 0) %></p>
+      <p class="text-green-500 text-sm"><%= number_to_currency_idr(expense.price) %></p>
     <% end %>
   <% end %>
 </div>
