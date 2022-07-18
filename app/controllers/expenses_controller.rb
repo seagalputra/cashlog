@@ -4,6 +4,8 @@ class ExpensesController < ApplicationController
   # GET /expenses or /expenses.json
   def index
     @expenses = Expense.all
+
+    # TODO add data do display a chart
   end
 
   # GET /expenses/1 or /expenses/1.json
@@ -58,13 +60,14 @@ class ExpensesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_expense
-      @expense = Expense.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def expense_params
-      params.require(:expense).permit(:title, :price, :date, :expense_type, :description)
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_expense
+    @expense = Expense.find(params[:id])
+  end
+
+  # Only allow a list of trusted parameters through.
+  def expense_params
+    params.require(:expense).permit(:title, :price, :date, :expense_type, :description)
+  end
 end
