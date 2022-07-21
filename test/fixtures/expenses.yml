@@ -4,12 +4,12 @@ one:
   title: MyString
   price: 9.99
   date: 2022-07-12
-  expense_type: 
+  expense_type: income
   description: MyText
 
 two:
   title: MyString
   price: 9.99
   date: 2022-07-12
-  expense_type: 
+  expense_type: outcome
   description: MyText

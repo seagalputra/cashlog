@@ -2,30 +2,46 @@
 
 <div class="flex items-center my-8 mx-4 md:mx-8">
   <table class="w-full bg-white shadow-md rounded-lg table-fixed">
-    <thead class="bg-slate-50 border-b">
+    <thead class="bg-slate-50">
       <tr>
-        <th class="text-bold text-left p-4">Title</th>
+        <th class="text-bold text-left p-4 rounded-lg">Title</th>
         <th class="text-bold text-left p-4">Date</th>
         <th class="text-bold text-left p-4">Price</th>
         <th class="text-bold text-left p-4">Needs</th>
         <th class="text-bold text-left p-4">Wants</th>
         <th class="text-bold text-left p-4">Invest</th>
-        <th class="text-bold text-left p-4">Description</th>
-        <th class="text-bold text-left p-4">Action</th>
+        <th class="text-bold text-left p-4 rounded-lg">Action</th>
       </tr>
     </thead>
   
     <tbody>
-      <% @expenses.each do |expense| %>
-        <tr>
-          <td class="p-4"><%= expense.title %></td>
-          <td class="p-4"><%= expense.date.strftime('%a, %d %b %Y') %></td>
-          <td class="p-4 <%= expense.income? ? 'text-green-500' : 'text-red-500' %>"><%= expense.income? ? '+' : '-' %><%= number_to_currency_idr(expense.price) %></td>
-          <td class="p-4">0</td>
-          <td class="p-4">0</td>
-          <td class="p-4">0</td>
-          <td class="p-4"><%= expense.description %></td>
-          <td class="p-4">Placeholder</td>
+      <% if @expenses.present? %>
+        <% @expenses.each do |expense| %>
+          <tr>
+            <td class="p-4"><%= expense.title %></td>
+            <td class="p-4"><%= expense.date.strftime('%a, %d %b %Y') %></td>
+            <td class="p-4 <%= expense.income? ? 'text-green-500' : 'text-red-500' %>"><%= expense.income? ? '+' : '-' %><%= number_to_currency_idr(expense.price) %></td>
+            <td class="p-4">0</td>
+            <td class="p-4">0</td>
+            <td class="p-4">0</td>
+            <td class="p-4">
+              <div class="flex gap-3">
+                <%= link_to 'Edit', edit_expense_path(expense), class: 'text-blue-700 hover:underline' %>
+                <%= link_to 'Delete', expense_path(expense), data: { "turbo-method": :delete }, class: 'text-red-700 hover:underline' %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      <% else %>
+        <tr class="w-full">
+          <td colspan="7">
+            <div class="flex justify-center items-center flex-col">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 text-neutral-300 mt-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+              </svg>
+              <p class="mb-6 text-neutral-300">No Data</p>
+            </div>
+          </td>
         </tr>
       <% end %>
     </tbody>
